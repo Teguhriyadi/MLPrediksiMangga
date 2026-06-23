@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class UserSeeder extends Seeder
@@ -13,13 +12,45 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            "username" => "admin123",
-            "nama" => "Administrator",
-            "email" => "admin@gmail.com",
-            "password" => bcrypt("password"),
-            "nomor_hp" => "0812819281",
-            "alamat" => "Jakarta Raya, Indonesia"
-        ]);
+        $users = [
+            [
+                "username" => "admin123",
+                "nama" => "Administrator Sistem",
+                "email" => "admin@gmail.com",
+                "role" => User::ROLE_ADMIN,
+                "nomor_hp" => "0812819281",
+                "alamat" => "Indramayu, Jawa Barat",
+            ],
+            [
+                "username" => "operator123",
+                "nama" => "Operator Produksi",
+                "email" => "operator@gmail.com",
+                "role" => User::ROLE_OPERATOR,
+                "nomor_hp" => "0812819282",
+                "alamat" => "Indramayu, Jawa Barat",
+            ],
+            [
+                "username" => "pimpinan123",
+                "nama" => "Pimpinan Dinas",
+                "email" => "pimpinan@gmail.com",
+                "role" => User::ROLE_PIMPINAN,
+                "nomor_hp" => "0812819283",
+                "alamat" => "Indramayu, Jawa Barat",
+            ],
+        ];
+
+        foreach ($users as $user) {
+            User::updateOrCreate(
+                ["username" => $user["username"]],
+                [
+                    "nama" => $user["nama"],
+                    "email" => $user["email"],
+                    "password" => bcrypt("password"),
+                    "role" => $user["role"],
+                    "nomor_hp" => $user["nomor_hp"],
+                    "alamat" => $user["alamat"],
+                ]
+            );
+        }
     }
 }

@@ -15,6 +15,16 @@
             <input type="text" class="form-control" name="username" id="username" placeholder="Masukkan Username" value="{{ old('username', $edit['username']) }}">
         </div>
         <div class="form-group">
+            <label for="role" class="form-label"> Role </label>
+            <select name="role" id="role" class="form-control">
+                @foreach ($roles as $roleValue => $roleLabel)
+                    <option value="{{ $roleValue }}" {{ old('role', $edit['role']) === $roleValue ? 'selected' : '' }}>
+                        {{ $roleLabel }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
             <label for="nomor_hp" class="form-label"> Nomor HP </label>
             <input type="text" class="form-control" name="nomor_hp" id="nomor_hp" placeholder="Masukkan Nomor HP" value="{{ old('nomor_hp', $edit['nomor_hp']) }}">
         </div>

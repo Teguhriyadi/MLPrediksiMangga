@@ -25,33 +25,41 @@
         </a>
     </li>
 
-    <li class="nav-item {{ Request::is('pages/produksi-mangga*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/pages/produksi-mangga') }}" title="Produksi Mangga">
-            <i class="fas fa-fw fa-book"></i>
-            <span>Produksi Mangga</span>
-        </a>
-    </li>
+    @if (Auth::user()->hasAnyRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_OPERATOR, \App\Models\User::ROLE_PIMPINAN]))
+        <li class="nav-item {{ Request::is('pages/produksi-mangga*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/pages/produksi-mangga') }}" title="Produksi Mangga">
+                <i class="fas fa-fw fa-book"></i>
+                <span>Produksi Mangga</span>
+            </a>
+        </li>
+    @endif
 
-    <li class="nav-item {{ Request::is('pages/varietas-mangga*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/pages/varietas-mangga') }}" title="Varietas Mangga">
-            <i class="fas fa-fw fa-seedling"></i>
-            <span>Varietas Mangga</span>
-        </a>
-    </li>
+    @if (Auth::user()->hasAnyRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_OPERATOR, \App\Models\User::ROLE_PIMPINAN]))
+        <li class="nav-item {{ Request::is('pages/varietas-mangga*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/pages/varietas-mangga') }}" title="Varietas Mangga">
+                <i class="fas fa-fw fa-seedling"></i>
+                <span>Varietas Mangga</span>
+            </a>
+        </li>
+    @endif
 
-    <li class="nav-item {{ Request::is('pages/laporan*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/pages/laporan') }}" title="Laporan">
-            <i class="fas fa-fw fa-file-download"></i>
-            <span>Laporan</span>
-        </a>
-    </li>
+    @if (Auth::user()->hasAnyRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_OPERATOR, \App\Models\User::ROLE_PIMPINAN]))
+        <li class="nav-item {{ Request::is('pages/laporan*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/pages/laporan') }}" title="Laporan">
+                <i class="fas fa-fw fa-file-download"></i>
+                <span>Laporan</span>
+            </a>
+        </li>
+    @endif
 
-    <li class="nav-item {{ Request::is('pages/users') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ url('/pages/users') }}" title="Users">
-            <i class="fas fa-fw fa-users"></i>
-            <span>Users</span>
-        </a>
-    </li>
+    @if (Auth::user()->hasRole(\App\Models\User::ROLE_ADMIN))
+        <li class="nav-item {{ Request::is('pages/users') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ url('/pages/users') }}" title="Users">
+                <i class="fas fa-fw fa-users"></i>
+                <span>Users</span>
+            </a>
+        </li>
+    @endif
 
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">

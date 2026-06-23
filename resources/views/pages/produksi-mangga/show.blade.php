@@ -5,6 +5,7 @@
 @push('modules')
 
     @php
+        $canManageProduksi = Auth::user()->hasAnyRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_OPERATOR]);
         $forecastList = $prediksi['forecasts'] ?? [];
         $summaryPrediksi = $prediksi['summary'] ?? [];
         $evaluation = $prediksi['evaluation'] ?? [];
@@ -35,9 +36,11 @@
             <a href="{{ url('/pages/produksi-mangga') }}" class="btn btn-secondary btn-sm">
                 <i class="fa fa-arrow-left"></i> Kembali
             </a>
-            <a href="{{ url('/pages/produksi-mangga/create') }}" class="btn btn-primary btn-sm">
-                <i class="fa fa-plus"></i> Tambah Data
-            </a>
+            @if ($canManageProduksi)
+                <a href="{{ url('/pages/produksi-mangga/create') }}" class="btn btn-primary btn-sm">
+                    <i class="fa fa-plus"></i> Tambah Data
+                </a>
+            @endif
         </div>
     </div>
 

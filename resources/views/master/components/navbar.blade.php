@@ -30,6 +30,7 @@
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">
                     {{ Auth::user()->nama }}
+                    <span class="d-block text-primary font-weight-bold">{{ \App\Models\User::roleOptions()[Auth::user()->role] ?? ucfirst(Auth::user()->role) }}</span>
                 </span>
                 <img class="img-profile rounded-circle" src="{{ asset('templating/img/undraw_profile.svg') }}">
             </a>

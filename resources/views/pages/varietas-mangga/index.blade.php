@@ -7,6 +7,9 @@
 @endpush
 
 @push('modules')
+    @php
+        $canManageVarietas = Auth::user()->hasAnyRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_OPERATOR]);
+    @endphp
     @if (session('success'))
         <div class="alert alert-success">
             <strong>Berhasil,</strong> {{ session('success') }}
@@ -19,9 +22,11 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalTambahVarietas">
-                <i class="fa fa-plus"></i> Tambah Varietas
-            </button>
+            @if ($canManageVarietas)
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalTambahVarietas">
+                    <i class="fa fa-plus"></i> Tambah Varietas
+                </button>
+            @endif
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -50,20 +55,24 @@
                                 <td>{{ $item->deskripsi ?? '-' }}</td>
                                 <td class="text-center">{{ $item->produksi_mangga_count }}</td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
-                                        data-target="#modalEditVarietas" onclick="editData(`{{ $item->id }}`)">
-                                        <i class="fa fa-edit"></i> Edit
-                                    </button>
-                                    <form action="{{ url('/pages/varietas-mangga/' . $item->id) }}" method="POST"
-                                        style="display: inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Apakah Anda yakin ingin menghapus varietas ini?')"
-                                            {{ $item->produksi_mangga_count > 0 ? 'disabled' : '' }}>
-                                            <i class="fa fa-trash"></i> Hapus
+                                    @if ($canManageVarietas)
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal"
+                                            data-target="#modalEditVarietas" onclick="editData(`{{ $item->id }}`)">
+                                            <i class="fa fa-edit"></i> Edit
                                         </button>
-                                    </form>
+                                        <form action="{{ url('/pages/varietas-mangga/' . $item->id) }}" method="POST"
+                                            style="display: inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Apakah Anda yakin ingin menghapus varietas ini?')"
+                                                {{ $item->produksi_mangga_count > 0 ? 'disabled' : '' }}>
+                                                <i class="fa fa-trash"></i> Hapus
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-muted small">Hanya lihat data</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

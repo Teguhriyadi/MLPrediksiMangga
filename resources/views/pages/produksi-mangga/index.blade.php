@@ -7,6 +7,9 @@
 @endpush
 
 @push('modules')
+    @php
+        $canManageProduksi = Auth::user()->hasAnyRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_OPERATOR]);
+    @endphp
 
     @if (session('success'))
         <div class="alert alert-success">
@@ -59,9 +62,11 @@
                 <h6 class="m-0 font-weight-bold text-primary">Dataset Produktivitas Mangga</h6>
                 <small class="text-muted">Data disusun per kecamatan dan per triwulan untuk mendukung analisis SARIMA.</small>
             </div>
-            <a href="{{ url('/pages/produksi-mangga/create') }}" class="btn btn-primary btn-sm">
-                <i class="fa fa-plus"></i> Tambah Data
-            </a>
+            @if ($canManageProduksi)
+                <a href="{{ url('/pages/produksi-mangga/create') }}" class="btn btn-primary btn-sm">
+                    <i class="fa fa-plus"></i> Tambah Data
+                </a>
+            @endif
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -105,16 +110,18 @@
                                     <a href="{{ url('/pages/produksi-mangga/' . $item['id']) }}" class="btn btn-info btn-sm">
                                         <i class="fa fa-eye"></i> Detail
                                     </a>
-                                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#exampleModalEdit" onclick="editData(`{{ $item['id'] }}`)">
-                                        <i class="fa fa-edit"></i> Edit
-                                    </button>
-                                    <form action="{{ url('/pages/produksi-mangga/' . $item['id']) }}" method="POST" style="display: inline">
-                                        @csrf
-                                        @method("DELETE")
-                                        <button onclick="return confirm('Apakah Anda Yakin? Ingin Menghapus Data Ini?')" type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fa fa-trash"></i> Hapus
+                                    @if ($canManageProduksi)
+                                        <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#exampleModalEdit" onclick="editData(`{{ $item['id'] }}`)">
+                                            <i class="fa fa-edit"></i> Edit
                                         </button>
-                                    </form>
+                                        <form action="{{ url('/pages/produksi-mangga/' . $item['id']) }}" method="POST" style="display: inline">
+                                            @csrf
+                                            @method("DELETE")
+                                            <button onclick="return confirm('Apakah Anda Yakin? Ingin Menghapus Data Ini?')" type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fa fa-trash"></i> Hapus
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
