@@ -5,28 +5,40 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class UsersController extends Controller
 {
     public function index()
     {
         $data["users"] = User::orderBy("created_at", "DESC")->get();
+        $data["roles"] = User::roleOptions();
 
         return view("pages.users.index", $data);
     }
 
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            "nama" => ["required", "string", "max:150"],
+            "username" => ["required", "string", "max:100", "unique:users,username"],
+            "email" => ["required", "email", "max:150", "unique:users,email"],
+            "role" => ["required", Rule::in(array_keys(User::roleOptions()))],
+            "nomor_hp" => ["required", "string", "max:30"],
+            "alamat" => ["nullable", "string"],
+        ]);
+
         try {
             DB::beginTransaction();
 
             User::create([
-                "nama" => $request["nama"],
-                "username" => $request["username"],
-                "email" => $request["email"],
+                "nama" => $validated["nama"],
+                "username" => $validated["username"],
+                "email" => $validated["email"],
                 "password" => bcrypt("password"),
-                "nomor_hp" => $request["nomor_hp"],
-                "alamat" => $request["alamat"]
+                "role" => $validated["role"],
+                "nomor_hp" => $validated["nomor_hp"],
+                "alamat" => $validated["alamat"] ?? null,
             ]);
 
             DB::commit();
@@ -39,24 +51,35 @@ class UsersController extends Controller
         }
     }
 
-    public function edit($id)
+    public function edit(string $id)
     {
-        $data["edit"] = User::where("id", $id)->first();
+        $data["edit"] = User::findOrFail($id);
+        $data["roles"] = User::roleOptions();
 
         return view("pages.users.edit", $data);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, string $id)
     {
+        $validated = $request->validate([
+            "nama" => ["required", "string", "max:150"],
+            "username" => ["required", "string", "max:100", Rule::unique("users", "username")->ignore($id, "id")],
+            "email" => ["required", "email", "max:150", Rule::unique("users", "email")->ignore($id, "id")],
+            "role" => ["required", Rule::in(array_keys(User::roleOptions()))],
+            "nomor_hp" => ["required", "string", "max:30"],
+            "alamat" => ["nullable", "string"],
+        ]);
+
         try {
             DB::beginTransaction();
 
-            User::where("id", $id)->update([
-                "nama" => $request["nama"],
-                "username" => $request["username"],
-                "email" => $request["email"],
-                "nomor_hp" => $request["nomor_hp"],
-                "alamat" => $request["alamat"]
+            User::query()->findOrFail($id)->update([
+                "nama" => $validated["nama"],
+                "username" => $validated["username"],
+                "email" => $validated["email"],
+                "role" => $validated["role"],
+                "nomor_hp" => $validated["nomor_hp"],
+                "alamat" => $validated["alamat"] ?? null,
             ]);
 
             DB::commit();
@@ -69,12 +92,12 @@ class UsersController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(string $id)
     {
         try {
             DB::beginTransaction();
 
-            User::where("id", $id)->delete();
+            User::destroy($id);
 
             DB::commit();
 

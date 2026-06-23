@@ -32,6 +32,7 @@
                             <th class="text-center">No.</th>
                             <th>Username</th>
                             <th>Nama</th>
+                            <th>Role</th>
                             <th>Email</th>
                             <th>Nomor HP</th>
                             <th>Alamat</th>
@@ -47,6 +48,9 @@
                                 <td class="text-center">{{ ++$nomer }}.</td>
                                 <td>{{ $item['username'] }}</td>
                                 <td>{{ $item['nama'] }}</td>
+                                <td>
+                                    <span class="badge badge-info">{{ $roles[$item['role']] ?? ucfirst($item['role']) }}</span>
+                                </td>
                                 <td>{{ $item['email'] }}</td>
                                 <td>{{ $item['nomor_hp'] }}</td>
                                 <td>{{ $item['alamat'] }}</td>
@@ -100,6 +104,15 @@
                             <label for="username" class="form-label"> Username </label>
                             <input type="text" class="form-control" name="username" id="username"
                                 placeholder="Masukkan Username">
+                        </div>
+                        <div class="form-group">
+                            <label for="role" class="form-label"> Role </label>
+                            <select name="role" id="role" class="form-control">
+                                <option value="">Pilih Role</option>
+                                @foreach ($roles as $roleValue => $roleLabel)
+                                    <option value="{{ $roleValue }}">{{ $roleLabel }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="nomor_hp" class="form-label"> Nomor HP </label>

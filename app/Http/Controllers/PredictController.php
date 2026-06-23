@@ -3,21 +3,74 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProduksiMangga;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class PredictController extends Controller
 {
-    public function store()
+    public function store(Request $request)
     {
-        $data = ProduksiMangga::select('tahun', 'triwulan', 'produksi')->get();
+        $selectedKecamatan = $request->input('kecamatan');
 
-        $response = Http::post(env('APP_PYTHON') . "/predict", [
-            'data' => $data,
-            'steps' => 4
-        ]);
+        $rawData = ProduksiMangga::query()
+            ->when($selectedKecamatan, fn ($query, $kecamatan) => $query->where('kecamatan', $kecamatan))
+            ->orderBy('tahun', 'ASC')
+            ->orderByRaw($this->quarterOrderSql())
+            ->get(['tahun', 'triwulan', 'produksi']);
 
-        $result = $response->json();
+        $data = filled($selectedKecamatan)
+            ? $rawData
+            : $rawData
+                ->groupBy(fn ($item) => $item->tahun . '-' . $item->triwulan)
+                ->map(function ($items) {
+                    $sample = $items->first();
 
-        return redirect('/pages/dashboard')->with('result', $result['data'] ?? []);
+                    return [
+                        'tahun' => (int) $sample->tahun,
+                        'triwulan' => $sample->triwulan,
+                        'produksi' => round((float) $items->sum('produksi'), 2),
+                    ];
+                })
+                ->values();
+
+        if ($data->isEmpty()) {
+            return redirect('/pages/dashboard?kecamatan=' . urlencode((string) $selectedKecamatan))
+                ->with('error', 'Data kecamatan yang dipilih belum tersedia untuk diprediksi.');
+        }
+
+        try {
+            $response = Http::timeout(20)->post(rtrim((string) env('APP_PYTHON'), '/') . "/predict", [
+                'data' => $data,
+                'steps' => 4,
+                'kecamatan' => $selectedKecamatan,
+            ]);
+
+            if (! $response->successful()) {
+                return redirect('/pages/dashboard?kecamatan=' . urlencode((string) $selectedKecamatan))
+                    ->with('error', 'Service Python gagal dipanggil.');
+            }
+
+            $result = $response->json();
+
+            return redirect('/pages/dashboard?kecamatan=' . urlencode((string) $selectedKecamatan))
+                ->with('result', $result['data'] ?? [])
+                ->with('prediction_summary', $result['summary'] ?? []);
+        } catch (\Throwable) {
+            return redirect('/pages/dashboard?kecamatan=' . urlencode((string) $selectedKecamatan))
+                ->with('error', 'Service Python belum aktif atau tidak dapat dihubungi.');
+        }
+    }
+
+    private function quarterOrderSql(string $direction = 'ASC'): string
+    {
+        $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        return "CASE triwulan
+            WHEN 'Q1' THEN 1
+            WHEN 'Q2' THEN 2
+            WHEN 'Q3' THEN 3
+            WHEN 'Q4' THEN 4
+            ELSE 5
+        END {$direction}";
     }
 }

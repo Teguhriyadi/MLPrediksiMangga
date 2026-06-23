@@ -11,10 +11,21 @@
             <label for="triwulan" class="form-label"> Triwulan </label>
             <select name="triwulan" class="form-control" id="triwulan">
                 <option value="">-- Pilih Triwulan --</option>
-                <option {{ $edit['triwulan'] == "Q1" ? 'selected' : '' }} value="Q1">Q1 (Jan - Mar)</option>
-                <option {{ $edit['triwulan'] == "Q2" ? 'selected' : '' }} value="Q2">Q2 (Apr - Jun)</option>
-                <option {{ $edit['triwulan'] == "Q3" ? 'selected' : '' }} value="Q3">Q3 (Jul - Sep)</option>
-                <option {{ $edit['triwulan'] == "Q4" ? 'selected' : '' }} value="Q4">Q4 (Okt - Des)</option>
+                @foreach ($daftarTriwulan as $kode => $label)
+                    <option {{ $edit['triwulan'] == $kode ? 'selected' : '' }} value="{{ $kode }}">{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="varietas_mangga_id" class="form-label"> Varietas Mangga </label>
+            <select name="varietas_mangga_id" class="form-control" id="varietas_mangga_id">
+                <option value="">-- Pilih Varietas --</option>
+                @foreach ($daftarVarietas as $varietas)
+                    <option value="{{ $varietas['id'] }}" {{ $edit['varietas_mangga_id'] == $varietas['id'] ? 'selected' : '' }}>
+                        {{ $varietas['nama_varietas'] }} ({{ $varietas['kode_varietas'] }})
+                    </option>
+                @endforeach
             </select>
         </div>
 
