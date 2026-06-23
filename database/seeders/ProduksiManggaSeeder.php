@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\ProduksiMangga;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\VarietasMangga;
 use Illuminate\Database\Seeder;
 
 class ProduksiManggaSeeder extends Seeder
@@ -13,46 +13,91 @@ class ProduksiManggaSeeder extends Seeder
      */
     public function run(): void
     {
-        $data = [
-            // 2021
-            ['tahun'=>2021,'triwulan'=>'Q1','luas_tanam'=>100,'luas_panen'=>90,'curah_hujan'=>220,'suhu'=>27,'produksi'=>8],
-            ['tahun'=>2021,'triwulan'=>'Q2','luas_tanam'=>110,'luas_panen'=>95,'curah_hujan'=>180,'suhu'=>29,'produksi'=>9],
-            ['tahun'=>2021,'triwulan'=>'Q3','luas_tanam'=>120,'luas_panen'=>100,'curah_hujan'=>150,'suhu'=>30,'produksi'=>10],
-            ['tahun'=>2021,'triwulan'=>'Q4','luas_tanam'=>130,'luas_panen'=>110,'curah_hujan'=>200,'suhu'=>28,'produksi'=>11],
+        $varietasMap = VarietasMangga::query()
+            ->pluck('id', 'nama_varietas');
 
-            // 2022
-            ['tahun'=>2022,'triwulan'=>'Q1','luas_tanam'=>140,'luas_panen'=>120,'curah_hujan'=>210,'suhu'=>27,'produksi'=>12],
-            ['tahun'=>2022,'triwulan'=>'Q2','luas_tanam'=>150,'luas_panen'=>130,'curah_hujan'=>170,'suhu'=>29,'produksi'=>13],
-            ['tahun'=>2022,'triwulan'=>'Q3','luas_tanam'=>160,'luas_panen'=>140,'curah_hujan'=>140,'suhu'=>30,'produksi'=>14],
-            ['tahun'=>2022,'triwulan'=>'Q4','luas_tanam'=>170,'luas_panen'=>150,'curah_hujan'=>190,'suhu'=>28,'produksi'=>15],
-
-            // 2023
-            ['tahun'=>2023,'triwulan'=>'Q1','luas_tanam'=>180,'luas_panen'=>160,'curah_hujan'=>220,'suhu'=>27,'produksi'=>16],
-            ['tahun'=>2023,'triwulan'=>'Q2','luas_tanam'=>190,'luas_panen'=>170,'curah_hujan'=>180,'suhu'=>29,'produksi'=>17],
-            ['tahun'=>2023,'triwulan'=>'Q3','luas_tanam'=>200,'luas_panen'=>180,'curah_hujan'=>150,'suhu'=>30,'produksi'=>18],
-            ['tahun'=>2023,'triwulan'=>'Q4','luas_tanam'=>210,'luas_panen'=>190,'curah_hujan'=>200,'suhu'=>28,'produksi'=>19],
-
-            // 2024
-            ['tahun'=>2024,'triwulan'=>'Q1','luas_tanam'=>220,'luas_panen'=>200,'curah_hujan'=>210,'suhu'=>27,'produksi'=>20],
-            ['tahun'=>2024,'triwulan'=>'Q2','luas_tanam'=>230,'luas_panen'=>210,'curah_hujan'=>170,'suhu'=>29,'produksi'=>21],
-            ['tahun'=>2024,'triwulan'=>'Q3','luas_tanam'=>240,'luas_panen'=>220,'curah_hujan'=>140,'suhu'=>30,'produksi'=>22],
-            ['tahun'=>2024,'triwulan'=>'Q4','luas_tanam'=>250,'luas_panen'=>230,'curah_hujan'=>190,'suhu'=>28,'produksi'=>23],
-
-            // 2025
-            ['tahun'=>2025,'triwulan'=>'Q1','luas_tanam'=>260,'luas_panen'=>240,'curah_hujan'=>220,'suhu'=>27,'produksi'=>24],
-            ['tahun'=>2025,'triwulan'=>'Q2','luas_tanam'=>270,'luas_panen'=>250,'curah_hujan'=>180,'suhu'=>29,'produksi'=>25],
-            ['tahun'=>2025,'triwulan'=>'Q3','luas_tanam'=>280,'luas_panen'=>260,'curah_hujan'=>150,'suhu'=>30,'produksi'=>26],
-            ['tahun'=>2025,'triwulan'=>'Q4','luas_tanam'=>290,'luas_panen'=>270,'curah_hujan'=>200,'suhu'=>28,'produksi'=>27],
-
-            // 2026
-            ['tahun'=>2026,'triwulan'=>'Q1','luas_tanam'=>300,'luas_panen'=>280,'curah_hujan'=>210,'suhu'=>27,'produksi'=>28],
-            ['tahun'=>2026,'triwulan'=>'Q2','luas_tanam'=>310,'luas_panen'=>290,'curah_hujan'=>170,'suhu'=>29,'produksi'=>29],
-            ['tahun'=>2026,'triwulan'=>'Q3','luas_tanam'=>320,'luas_panen'=>300,'curah_hujan'=>140,'suhu'=>30,'produksi'=>30],
-            ['tahun'=>2026,'triwulan'=>'Q4','luas_tanam'=>330,'luas_panen'=>310,'curah_hujan'=>190,'suhu'=>28,'produksi'=>31],
+        $templateTriwulan = [
+            'Q1' => ['curah_hujan' => 220, 'suhu' => 27, 'serangan_hama' => 12],
+            'Q2' => ['curah_hujan' => 180, 'suhu' => 29, 'serangan_hama' => 10],
+            'Q3' => ['curah_hujan' => 150, 'suhu' => 30, 'serangan_hama' => 8],
+            'Q4' => ['curah_hujan' => 200, 'suhu' => 28, 'serangan_hama' => 11],
         ];
 
-        foreach ($data as $item) {
-            ProduksiMangga::create($item);
+        $kecamatanProfiles = [
+            ['kecamatan' => 'Haurgeulis', 'varietas' => 'Gedong Gincu', 'base_produksi' => 20.4, 'base_luas_tanam' => 74, 'base_pohon' => 275619],
+            ['kecamatan' => 'Gantar', 'varietas' => 'Cengkir', 'base_produksi' => 7.1, 'base_luas_tanam' => 31, 'base_pohon' => 90250],
+            ['kecamatan' => 'Kroya', 'varietas' => 'Harum Manis', 'base_produksi' => 16.3, 'base_luas_tanam' => 58, 'base_pohon' => 205960],
+            ['kecamatan' => 'Gabuswetan', 'varietas' => 'Cengkir', 'base_produksi' => 2.8, 'base_luas_tanam' => 11, 'base_pohon' => 24000],
+            ['kecamatan' => 'Cikedung', 'varietas' => 'Gedong Gincu', 'base_produksi' => 18.6, 'base_luas_tanam' => 65, 'base_pohon' => 284064],
+            ['kecamatan' => 'Terisi', 'varietas' => 'Golek', 'base_produksi' => 17.5, 'base_luas_tanam' => 62, 'base_pohon' => 28040],
+            ['kecamatan' => 'Lelea', 'varietas' => 'Gedong Gincu', 'base_produksi' => 5.2, 'base_luas_tanam' => 20, 'base_pohon' => 100600],
+            ['kecamatan' => 'Bangodua', 'varietas' => 'Cengkir', 'base_produksi' => 11.8, 'base_luas_tanam' => 41, 'base_pohon' => 61524],
+            ['kecamatan' => 'Tukdana', 'varietas' => 'Harum Manis', 'base_produksi' => 9.7, 'base_luas_tanam' => 35, 'base_pohon' => 153582],
+            ['kecamatan' => 'Widasari', 'varietas' => 'Gedong Gincu', 'base_produksi' => 10.8, 'base_luas_tanam' => 36, 'base_pohon' => 62840],
+            ['kecamatan' => 'Kertasemaya', 'varietas' => 'Manalagi', 'base_produksi' => 4.4, 'base_luas_tanam' => 18, 'base_pohon' => 38064],
+            ['kecamatan' => 'Sukagumiwang', 'varietas' => 'Golek', 'base_produksi' => 12.5, 'base_luas_tanam' => 42, 'base_pohon' => 72316],
+            ['kecamatan' => 'Krangkeng', 'varietas' => 'Gedong Gincu', 'base_produksi' => 13.2, 'base_luas_tanam' => 46, 'base_pohon' => 107714],
+            ['kecamatan' => 'Karangampel', 'varietas' => 'Harum Manis', 'base_produksi' => 6.1, 'base_luas_tanam' => 23, 'base_pohon' => 17866],
+            ['kecamatan' => 'Kedokan Bunder', 'varietas' => 'Cengkir', 'base_produksi' => 8.6, 'base_luas_tanam' => 29, 'base_pohon' => 62140],
+            ['kecamatan' => 'Juntinyuat', 'varietas' => 'Gedong Gincu', 'base_produksi' => 14.7, 'base_luas_tanam' => 50, 'base_pohon' => 165320],
+            ['kecamatan' => 'Sliyeg', 'varietas' => 'Manalagi', 'base_produksi' => 19.3, 'base_luas_tanam' => 68, 'base_pohon' => 153920],
+            ['kecamatan' => 'Jatibarang', 'varietas' => 'Gedong Gincu', 'base_produksi' => 22.8, 'base_luas_tanam' => 79, 'base_pohon' => 299380],
+            ['kecamatan' => 'Balongan', 'varietas' => 'Harum Manis', 'base_produksi' => 6.9, 'base_luas_tanam' => 24, 'base_pohon' => 66460],
+            ['kecamatan' => 'Indramayu', 'varietas' => 'Gedong Gincu', 'base_produksi' => 2.5, 'base_luas_tanam' => 9, 'base_pohon' => 15220],
+            ['kecamatan' => 'Sindang', 'varietas' => 'Cengkir', 'base_produksi' => 5.6, 'base_luas_tanam' => 21, 'base_pohon' => 54125],
+            ['kecamatan' => 'Cantigi', 'varietas' => 'Gedong Gincu', 'base_produksi' => 15.6, 'base_luas_tanam' => 54, 'base_pohon' => 107244],
+            ['kecamatan' => 'Pasekan', 'varietas' => 'Manalagi', 'base_produksi' => 3.6, 'base_luas_tanam' => 14, 'base_pohon' => 18840],
+            ['kecamatan' => 'Lohbener', 'varietas' => 'Gedong Gincu', 'base_produksi' => 10.5, 'base_luas_tanam' => 37, 'base_pohon' => 79834],
+            ['kecamatan' => 'Arahan', 'varietas' => 'Golek', 'base_produksi' => 8.9, 'base_luas_tanam' => 31, 'base_pohon' => 70073],
+            ['kecamatan' => 'Losarang', 'varietas' => 'Cengkir', 'base_produksi' => 9.4, 'base_luas_tanam' => 33, 'base_pohon' => 70518],
+            ['kecamatan' => 'Kandanghaur', 'varietas' => 'Harum Manis', 'base_produksi' => 4.1, 'base_luas_tanam' => 15, 'base_pohon' => 17240],
+            ['kecamatan' => 'Bongas', 'varietas' => 'Gedong Gincu', 'base_produksi' => 4.6, 'base_luas_tanam' => 17, 'base_pohon' => 17940],
+            ['kecamatan' => 'Anjatan', 'varietas' => 'Gedong Gincu', 'base_produksi' => 12.8, 'base_luas_tanam' => 45, 'base_pohon' => 107312],
+            ['kecamatan' => 'Sukra', 'varietas' => 'Manalagi', 'base_produksi' => 2.9, 'base_luas_tanam' => 10, 'base_pohon' => 11817],
+            ['kecamatan' => 'Patrol', 'varietas' => 'Cengkir', 'base_produksi' => 1.8, 'base_luas_tanam' => 7, 'base_pohon' => 4780],
+        ];
+
+        foreach ($kecamatanProfiles as $indexKecamatan => $profile) {
+            $varietasId = $varietasMap[$profile['varietas']] ?? $varietasMap->first();
+
+            for ($tahun = 2021; $tahun <= 2026; $tahun++) {
+                foreach ($templateTriwulan as $indexTriwulan => $iklim) {
+                    $seasonalFactor = match ($indexTriwulan) {
+                        'Q1' => 1.08,
+                        'Q2' => 1.02,
+                        'Q3' => 0.95,
+                        default => 1.05,
+                    };
+
+                    $yearFactor = 1 + (($tahun - 2021) * 0.035);
+                    $regionalFactor = 1 + (($indexKecamatan % 5) * 0.018);
+                    $produksi = round($profile['base_produksi'] * $seasonalFactor * $yearFactor * $regionalFactor, 2);
+                    $luasTanam = round($profile['base_luas_tanam'] * $regionalFactor * (1 + (($tahun - 2021) * 0.015)), 2);
+                    $luasPanen = round($luasTanam * (0.86 + (($indexKecamatan % 4) * 0.015)), 2);
+                    $jumlahPohon = (int) round($profile['base_pohon'] * $regionalFactor * (1 + (($tahun - 2021) * 0.012)));
+
+                    ProduksiMangga::query()->updateOrCreate(
+                        [
+                            'kecamatan' => $profile['kecamatan'],
+                            'tahun' => $tahun,
+                            'triwulan' => $indexTriwulan,
+                        ],
+                        [
+                            'varietas_mangga_id' => $varietasId,
+                            'luas_tanam' => $luasTanam,
+                            'luas_panen' => $luasPanen,
+                            'jumlah_pohon' => $jumlahPohon,
+                            'umur_tanaman' => 5 + (($tahun + $indexKecamatan) % 7),
+                            'curah_hujan' => $iklim['curah_hujan'] + (($indexKecamatan % 6) * 4),
+                            'suhu' => $iklim['suhu'] + (($indexKecamatan % 3) * 0.4),
+                            'pupuk_organik' => round((450 + ($indexKecamatan * 8)) * $yearFactor, 2),
+                            'serangan_hama' => max(2, min(28, $iklim['serangan_hama'] + (($indexKecamatan % 5) - 2))),
+                            'produksi' => $produksi,
+                            'catatan' => 'Data contoh multi-kecamatan untuk simulasi analisis dan prediksi produktivitas mangga berbasis SARIMA.',
+                        ]
+                    );
+                }
+            }
         }
     }
 }

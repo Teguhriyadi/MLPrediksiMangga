@@ -17,7 +17,7 @@
 
 </head>
 
-<body id="page-top">
+<body id="page-top" class="app-shell">
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -37,9 +37,9 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid app-content">
 
-                    <h1 class="h3 mb-4 text-gray-800">
+                    <h1 class="h3 mb-4 text-gray-800 app-page-title">
                         @stack("title")
                     </h1>
 

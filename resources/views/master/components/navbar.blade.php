@@ -1,24 +1,32 @@
-<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+<nav class="navbar navbar-expand navbar-light topbar mb-4 static-top shadow app-topbar">
 
     <!-- Sidebar Toggle (Topbar) -->
-    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+    <button type="button" id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3" aria-label="Toggle sidebar">
         <i class="fa fa-bars"></i>
     </button>
 
+    <div class="d-flex align-items-center topbar-copy" style="flex: 1 1 auto;">
+        <div class="min-w-0">
+            <h6 class="topbar-title d-none d-sm-block">Sistem Informasi Perkebunan Mangga</h6>
+            <h6 class="topbar-title d-block d-sm-none">Mango Analytics</h6>
+            <p class="topbar-subtitle d-none d-md-block">
+                Dashboard prediksi, laporan, dan master data.
+            </p>
+        </div>
+    </div>
+
     <!-- Topbar Navbar -->
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto align-items-center">
 
-        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-        <li class="nav-item dropdown no-arrow d-sm-none">
-            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-search fa-fw"></i>
-            </a>
+        <li class="nav-item d-none d-md-flex align-items-center">
+            <span class="topbar-chip">
+                <i class="fas fa-chart-line"></i>
+                Pengambilan Data Berdasarkan Waktu Tertentu
+            </span>
         </li>
-
         <!-- Nav Item - User Information -->
         <li class="nav-item dropdown no-arrow">
-            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+            <a class="nav-link dropdown-toggle user-toggle" href="#" id="userDropdown" role="button"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">
                     {{ Auth::user()->nama }}

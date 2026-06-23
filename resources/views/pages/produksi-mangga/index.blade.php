@@ -18,11 +18,50 @@
         </div>
     @endif
 
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Data</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $ringkasan['total_data'] }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Produksi</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($ringkasan['total_produksi'], 2, ',', '.') }} ton</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Rata-rata Produksi</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($ringkasan['rata_produksi'], 2, ',', '.') }} ton</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Kecamatan Aktif</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $ringkasan['kecamatan_aktif'] }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="m-0 font-weight-bold text-primary">Dataset Produktivitas Mangga</h6>
+                <small class="text-muted">Data disusun per kecamatan dan per triwulan untuk mendukung analisis SARIMA.</small>
+            </div>
+            <a href="{{ url('/pages/produksi-mangga/create') }}" class="btn btn-primary btn-sm">
                 <i class="fa fa-plus"></i> Tambah Data
-            </button>
+            </a>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -30,13 +69,13 @@
                     <thead>
                         <tr>
                             <th class="text-center">No.</th>
-                            <th class="text-center">Tahun</th>
-                            <th class="text-center">Triwulan</th>
-                            <th class="text-center">Luas Tanam</th>
+                            <th class="text-center">Kecamatan</th>
+                            <th class="text-center">Periode</th>
+                            <th class="text-center">Varietas</th>
                             <th class="text-center">Luas Panen</th>
-                            <th class="text-center">Curah Hujan</th>
-                            <th class="text-center">Suhu</th>
                             <th class="text-center">Produksi</th>
+                            <th class="text-center">Produktivitas</th>
+                            <th class="text-center">Status</th>
                             <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -45,16 +84,27 @@
                             $nomer = 0;
                         @endphp
                         @foreach ($produksi as $item)
+                            @php
+                                $produktivitas = $item['luas_panen'] > 0 ? $item['produksi'] / $item['luas_panen'] : 0;
+                                $status = $produktivitas >= 0.12 ? 'Tinggi' : ($produktivitas >= 0.08 ? 'Sedang' : 'Rendah');
+                            @endphp
                             <tr>
                                 <td class="text-center">{{ ++$nomer }}.</td>
-                                <td class="text-center">{{ $item['tahun'] }}</td>
-                                <td class="text-center">{{ $item['triwulan'] }}</td>
-                                <td class="text-center">{{ $item['luas_tanam'] }}</td>
-                                <td class="text-center">{{ $item['luas_panen'] }}</td>
-                                <td class="text-center">{{ $item['curah_hujan'] }}</td>
-                                <td class="text-center">{{ $item['suhu'] }}</td>
-                                <td class="text-center">{{ $item['produksi'] }}</td>
+                                <td>{{ $item['kecamatan'] ?? '-' }}</td>
+                                <td class="text-center">{{ $item['tahun'] }} {{ $item['triwulan'] }}</td>
+                                <td class="text-center">{{ $item->varietasMangga->nama_varietas ?? ($item['varietas'] ?? '-') }}</td>
+                                <td class="text-center">{{ number_format((float) $item['luas_panen'], 2, ',', '.') }}</td>
+                                <td class="text-center">{{ number_format((float) $item['produksi'], 2, ',', '.') }}</td>
+                                <td class="text-center">{{ number_format($produktivitas, 2, ',', '.') }} ton/ha</td>
                                 <td class="text-center">
+                                    <span class="badge badge-{{ $status === 'Tinggi' ? 'success' : ($status === 'Sedang' ? 'warning' : 'danger') }}">
+                                        {{ $status }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ url('/pages/produksi-mangga/' . $item['id']) }}" class="btn btn-info btn-sm">
+                                        <i class="fa fa-eye"></i> Detail
+                                    </a>
                                     <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#exampleModalEdit" onclick="editData(`{{ $item['id'] }}`)">
                                         <i class="fa fa-edit"></i> Edit
                                     </button>
@@ -70,80 +120,6 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fa fa-plus"></i> Tambah Data
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <form action="{{ url('/pages/produksi-mangga') }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="tahun" class="form-label"> Tahun </label>
-                            <input type="number" class="form-control" name="tahun" id="tahun"
-                                placeholder="Masukkan Tahun">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="triwulan" class="form-label"> Triwulan </label>
-                            <select name="triwulan" class="form-control" id="triwulan">
-                                <option value="">-- Pilih Triwulan --</option>
-                                <option value="Q1">Q1 (Jan - Mar)</option>
-                                <option value="Q2">Q2 (Apr - Jun)</option>
-                                <option value="Q3">Q3 (Jul - Sep)</option>
-                                <option value="Q4">Q4 (Okt - Des)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="luas_tanam" class="form-label"> Luas Tanam </label>
-                            <input type="number" class="form-control" name="luas_tanam" id="luas_tanam"
-                                placeholder="Masukkan Luas Tanam">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="luas_panen" class="form-label"> Luas Panen </label>
-                            <input type="number" class="form-control" name="luas_panen" id="luas_panen"
-                                placeholder="Masukkan Luas Panen">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="curah_hujan" class="form-label"> Curah Hujan </label>
-                            <input type="number" class="form-control" name="curah_hujan" id="curah_hujan"
-                                placeholder="Masukkan Curah Hujan">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="suhu" class="form-label"> Suhu </label>
-                            <input type="number" class="form-control" name="suhu" id="suhu"
-                                placeholder="Masukkan Suhu">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="produksi" class="form-label"> Produksi </label>
-                            <input type="number" class="form-control" name="produksi" id="produksi"
-                                placeholder="Masukkan Produksi">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="reset" class="btn btn-danger btn-sm">
-                            <i class="fa fa-times"></i> Batal
-                        </button>
-                        <button type="submit" class="btn btn-success btn-sm">
-                            <i class="fa fa-save"></i> Simpan
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
