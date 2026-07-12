@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        {{ env('APP_NAME') }} - Login
+        {{ env('APP_NAME') }} - Lupa Password
     </title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -15,10 +15,9 @@
         body {
             min-height: 100vh;
             margin: 0;
-            background:
-                radial-gradient(circle at top left, rgba(56, 189, 248, 0.32), transparent 32%),
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.32), transparent 32%),
                 radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.26), transparent 28%),
-                linear-gradient(135deg, #0f172a 0%, #172554 45%, #1d4ed8 100%);
+                linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%);
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
 
@@ -32,7 +31,7 @@
 
         .login-wrapper {
             width: 100%;
-            max-width: 1120px;
+            max-width: 900px;
             display: grid;
             grid-template-columns: 1.05fr 0.95fr;
             background: rgba(255, 255, 255, 0.08);
@@ -46,32 +45,32 @@
         .login-showcase {
             position: relative;
             padding: 3rem;
-            color: #ffffff;
+            color: #fff;
             background: linear-gradient(180deg, rgba(15, 23, 42, 0.32), rgba(15, 23, 42, 0.1));
         }
 
         .login-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.55rem;
-            padding: 0.55rem 0.95rem;
+            gap: 0.45rem;
+            padding: 0.45rem 0.8rem;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.12);
-            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.14);
+            font-size: 0.8rem;
             font-weight: 600;
             margin-bottom: 1.4rem;
         }
 
         .login-showcase h1 {
-            font-size: 2.3rem;
+            font-size: 2rem;
             font-weight: 700;
             line-height: 1.2;
             margin-bottom: 1rem;
         }
 
         .login-showcase p {
-            color: rgba(255, 255, 255, 0.82);
-            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 0.95rem;
             line-height: 1.75;
             margin-bottom: 2rem;
         }
@@ -98,6 +97,7 @@
         .login-feature-title {
             font-weight: 700;
             margin-bottom: 0.2rem;
+            color: #fff;
         }
 
         .login-feature-text {
@@ -105,6 +105,17 @@
             font-size: 0.92rem;
             line-height: 1.6;
             margin: 0;
+        }
+
+        .btn-outline-secondary.btn-login {
+            background: transparent;
+            border: 2px solid #64748b;
+            color: #64748b;
+        }
+
+        .btn-outline-secondary.btn-login:hover {
+            background: #64748b;
+            color: #fff;
         }
 
         .login-panel {
@@ -121,21 +132,21 @@
         }
 
         .login-brand {
-            width: 58px;
-            height: 58px;
-            border-radius: 18px;
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             color: #fff;
-            font-size: 1.2rem;
+            font-size: 1rem;
             box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24);
             margin-bottom: 1rem;
         }
 
         .login-title {
-            font-size: 1.65rem;
+            font-size: 1.55rem;
             font-weight: 700;
             color: #0f172a;
             margin-bottom: 0.55rem;
@@ -154,10 +165,10 @@
         }
 
         .form-control {
-            min-height: 52px;
-            border-radius: 16px;
+            min-height: 50px;
+            border-radius: 14px;
             border: 1px solid #dbe4f0;
-            padding: 0.85rem 1rem;
+            padding: 0.8rem 1rem;
             box-shadow: none;
         }
 
@@ -167,41 +178,33 @@
         }
 
         .btn-login {
-            min-height: 52px;
-            border-radius: 16px;
+            min-height: 50px;
+            border-radius: 14px;
             font-weight: 600;
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border: none;
         }
 
-        .btn-reset {
-            min-height: 52px;
-            border-radius: 16px;
-            font-weight: 600;
-        }
-
         .login-footer-note {
             color: #94a3b8;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
             margin-top: 1.4rem;
             text-align: center;
         }
 
         .alert {
             border: none;
-            border-radius: 16px;
-            font-size: 0.94rem;
+            border-radius: 14px;
+            font-size: 0.92rem;
         }
 
         @media (max-width: 991.98px) {
             .login-wrapper {
                 grid-template-columns: 1fr;
             }
-
             .login-showcase {
                 padding: 2rem;
             }
-
             .login-panel {
                 padding: 2rem 1.5rem;
             }
@@ -211,21 +214,8 @@
             .login-page {
                 padding: 0.9rem;
             }
-
             .login-wrapper {
                 border-radius: 22px;
-            }
-
-            .login-showcase {
-                padding: 1.5rem;
-            }
-
-            .login-showcase h1 {
-                font-size: 1.7rem;
-            }
-
-            .login-panel {
-                padding: 1.5rem 1.15rem;
             }
         }
     </style>
@@ -236,42 +226,21 @@
         <div class="login-wrapper">
             <div class="login-showcase">
                 <span class="login-badge">
-                    <i class="fas fa-chart-line"></i>
-                    Sistem Prediksi Produktivitas Mangga
+                    <i class="fas fa-key"></i>
+                    Reset Password
                 </span>
-
-                <h1>Masuk ke Dashboard Perkebunan Mangga</h1>
+                <h1>Lupa Password Akun Anda?</h1>
                 <p>
-                    Kelola data produksi, varietas, laporan, dan hasil prediksi SARIMA dalam satu sistem.
+                    Tenang, Anda dapat mereset password dengan mudah. Masukkan alamat email yang terdaftar, dan kami akan
+                    mengirimkan tautan reset password ke email Anda.
                 </p>
-
                 <div class="login-feature">
                     <div class="login-feature-icon">
-                        <i class="fas fa-database"></i>
+                        <i class="fas fa-envelope"></i>
                     </div>
                     <div>
-                        <div class="login-feature-title">Manajemen Data Produksi</div>
-                        <p class="login-feature-text">Simpan data per kecamatan, triwulan, varietas, dan faktor pendukung produktivitas.</p>
-                    </div>
-                </div>
-
-                <div class="login-feature">
-                    <div class="login-feature-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <div>
-                        <div class="login-feature-title">Analisis dan Forecast</div>
-                        <p class="login-feature-text">Lihat hasil prediksi SARIMA, tren produksi, dan evaluasi model secara lebih informatif.</p>
-                    </div>
-                </div>
-
-                <div class="login-feature mb-0">
-                    <div class="login-feature-icon">
-                        <i class="fas fa-file-pdf"></i>
-                    </div>
-                    <div>
-                        <div class="login-feature-title">Laporan Siap Unduh</div>
-                        <p class="login-feature-text">Unduh laporan produksi, rekap kecamatan, dan dokumen PDF/Excel.</p>
+                        <div class="login-feature-title">Kirim ke Email</div>
+                        <p class="login-feature-text">Tautan reset password dikirim langsung ke email Anda.</p>
                     </div>
                 </div>
             </div>
@@ -281,10 +250,9 @@
                     <div class="login-brand">
                         <i class="fas fa-seedling"></i>
                     </div>
-
-                    <h2 class="login-title">Login Akun</h2>
+                    <h2 class="login-title">Lupa Password</h2>
                     <p class="login-subtitle">
-                        Masukkan username dan password untuk mengakses dashboard analisis produktivitas mangga.
+                        Masukkan alamat email yang terdaftar untuk menerima tautan pengaturan ulang password.
                     </p>
 
                     @if (session('success'))
@@ -299,51 +267,29 @@
                         </div>
                     @endif
 
-                    <form action="{{ url('/login') }}" method="POST">
+                    <form action="{{ route('password.email') }}" method="POST">
                         @csrf
-
                         <div class="mb-3">
-                            <label class="form-label" for="username">Username</label>
-                            <input type="text" name="username" id="username"
-                                class="form-control @error('username') is-invalid @enderror"
-                                placeholder="Masukkan username" value="{{ old('username') }}" required autofocus>
-                            @error('username')
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" name="email" id="email"
+                                class="form-control @error('email') is-invalid @enderror"
+                                placeholder="Masukkan email Anda" value="{{ old('email') }}" required autofocus>
+                            @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label" for="password">Password</label>
-                            <input type="password" name="password" id="password"
-                                class="form-control @error('password') is-invalid @enderror"
-                                placeholder="Masukkan password" required>
-                            @error('password')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3 text-end">
-                            <a href="{{ route('password.request') }}" class="text-decoration-none small">
-                                <i class="fas fa-key me-1"></i>
-                                Lupa Password?
-                            </a>
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-login">
-                                <i class="fas fa-sign-in-alt me-1"></i>
-                                Masuk ke Sistem
+                                <i class="fas fa-paper-plane me-1"></i>
+                                Kirim Tautan Reset
                             </button>
-
-                            <button type="reset" class="btn btn-outline-secondary btn-reset">
-                                Reset Form
-                            </button>
+                            <a href="{{ url('/login') }}" class="btn btn-outline-secondary btn-login">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Kembali ke Login
+                            </a>
                         </div>
                     </form>
-
-                    <p class="login-footer-note">
-                        Sistem Informasi Perkebunan Berbasis Web untuk Prediksi Produktivitas Komoditas Mangga.
-                    </p>
                 </div>
             </div>
         </div>

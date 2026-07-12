@@ -33,6 +33,7 @@
                             <th>Username</th>
                             <th>Nama</th>
                             <th>Role</th>
+                            <th>Kecamatan</th>
                             <th>Email</th>
                             <th>Nomor HP</th>
                             <th>Alamat</th>
@@ -51,6 +52,7 @@
                                 <td>
                                     <span class="badge badge-info">{{ $roles[$item['role']] ?? ucfirst($item['role']) }}</span>
                                 </td>
+                                <td>{{ $item['kecamatan'] ?? '-' }}</td>
                                 <td>{{ $item['email'] }}</td>
                                 <td>{{ $item['nomor_hp'] }}</td>
                                 <td>{{ $item['alamat'] }}</td>
@@ -111,6 +113,15 @@
                                 <option value="">Pilih Role</option>
                                 @foreach ($roles as $roleValue => $roleLabel)
                                     <option value="{{ $roleValue }}">{{ $roleLabel }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="kecamatan" class="form-label"> Kecamatan (untuk Role UPTD) </label>
+                            <select name="kecamatan" id="kecamatan" class="form-control">
+                                <option value="">Pilih Kecamatan</option>
+                                @foreach ($kecamatans as $kecamatan)
+                                    <option value="{{ $kecamatan }}">{{ $kecamatan }}</option>
                                 @endforeach
                             </select>
                         </div>

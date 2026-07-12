@@ -130,6 +130,14 @@
         z-index: 1055;
     }
 
+    .modal {
+        z-index: 1070;
+    }
+
+    .modal-backdrop {
+        z-index: 1065;
+    }
+
     .app-shell .app-topbar .topbar-title {
         font-size: 1.05rem;
         font-weight: 700;
