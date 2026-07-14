@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kecamatan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ class UsersController extends Controller
     {
         $data["users"] = User::orderBy("created_at", "DESC")->get();
         $data["roles"] = User::roleOptions();
+        $data["kecamatans"] = Kecamatan::where('is_active', true)->orderBy('nama')->pluck('nama');
 
         return view("pages.users.index", $data);
     }
@@ -24,6 +26,7 @@ class UsersController extends Controller
             "username" => ["required", "string", "max:100", "unique:users,username"],
             "email" => ["required", "email", "max:150", "unique:users,email"],
             "role" => ["required", Rule::in(array_keys(User::roleOptions()))],
+            "kecamatan" => ["nullable", Rule::in(Kecamatan::where('is_active', true)->pluck('nama')->toArray())],
             "nomor_hp" => ["required", "string", "max:30"],
             "alamat" => ["nullable", "string"],
         ]);
@@ -37,6 +40,7 @@ class UsersController extends Controller
                 "email" => $validated["email"],
                 "password" => bcrypt("password"),
                 "role" => $validated["role"],
+                "kecamatan" => $validated["kecamatan"] ?? null,
                 "nomor_hp" => $validated["nomor_hp"],
                 "alamat" => $validated["alamat"] ?? null,
             ]);
@@ -55,6 +59,7 @@ class UsersController extends Controller
     {
         $data["edit"] = User::findOrFail($id);
         $data["roles"] = User::roleOptions();
+        $data["kecamatans"] = Kecamatan::where('is_active', true)->orderBy('nama')->pluck('nama');
 
         return view("pages.users.edit", $data);
     }
@@ -66,6 +71,7 @@ class UsersController extends Controller
             "username" => ["required", "string", "max:100", Rule::unique("users", "username")->ignore($id, "id")],
             "email" => ["required", "email", "max:150", Rule::unique("users", "email")->ignore($id, "id")],
             "role" => ["required", Rule::in(array_keys(User::roleOptions()))],
+            "kecamatan" => ["nullable", Rule::in(Kecamatan::where('is_active', true)->pluck('nama')->toArray())],
             "nomor_hp" => ["required", "string", "max:30"],
             "alamat" => ["nullable", "string"],
         ]);
@@ -78,6 +84,7 @@ class UsersController extends Controller
                 "username" => $validated["username"],
                 "email" => $validated["email"],
                 "role" => $validated["role"],
+                "kecamatan" => $validated["kecamatan"] ?? null,
                 "nomor_hp" => $validated["nomor_hp"],
                 "alamat" => $validated["alamat"] ?? null,
             ]);

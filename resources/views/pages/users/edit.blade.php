@@ -25,6 +25,17 @@
             </select>
         </div>
         <div class="form-group">
+            <label for="kecamatan" class="form-label"> Kecamatan (untuk Role UPTD) </label>
+            <select name="kecamatan" id="kecamatan" class="form-control">
+                <option value="">Pilih Kecamatan</option>
+                @foreach ($kecamatans as $kecamatan)
+                    <option value="{{ $kecamatan }}" {{ old('kecamatan', $edit['kecamatan']) === $kecamatan ? 'selected' : '' }}>
+                        {{ $kecamatan }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
             <label for="nomor_hp" class="form-label"> Nomor HP </label>
             <input type="text" class="form-control" name="nomor_hp" id="nomor_hp" placeholder="Masukkan Nomor HP" value="{{ old('nomor_hp', $edit['nomor_hp']) }}">
         </div>

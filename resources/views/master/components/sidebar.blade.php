@@ -25,7 +25,15 @@
         </a>
     </li>
 
-    @if (Auth::user()->hasAnyRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_OPERATOR, \App\Models\User::ROLE_PIMPINAN]))
+    <!-- Nav Item - Prediksi -->
+    <li class="nav-item {{ Request::is('pages/prediksi') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('prediksi.index') }}" title="Prediksi">
+            <i class="fas fa-fw fa-chart-line"></i>
+            <span>Prediksi SARIMA</span>
+        </a>
+    </li>
+
+    @if (Auth::user()->hasAnyRole([\App\Models\User::ROLE_ADMIN, \App\Models\User::ROLE_OPERATOR, \App\Models\User::ROLE_PIMPINAN, \App\Models\User::ROLE_UPTD]))
         <li class="nav-item {{ Request::is('pages/produksi-mangga*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ url('/pages/produksi-mangga') }}" title="Produksi Mangga">
                 <i class="fas fa-fw fa-book"></i>
@@ -53,6 +61,12 @@
     @endif
 
     @if (Auth::user()->hasRole(\App\Models\User::ROLE_ADMIN))
+        <li class="nav-item {{ Request::is('pages/kecamatan') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('kecamatan.index') }}" title="Kecamatan">
+                <i class="fas fa-fw fa-map-marker-alt"></i>
+                <span>Master Kecamatan</span>
+            </a>
+        </li>
         <li class="nav-item {{ Request::is('pages/users') ? 'active' : '' }}">
             <a class="nav-link" href="{{ url('/pages/users') }}" title="Users">
                 <i class="fas fa-fw fa-users"></i>

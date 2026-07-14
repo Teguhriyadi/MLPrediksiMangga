@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\AppController;
+use App\Http\Controllers\KecamatanController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PredictController;
 use App\Http\Controllers\ProduksiManggaController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VarietasManggaController;
 use App\Models\User;
@@ -17,8 +19,18 @@ Route::get("/", function () {
 
 Route::middleware(["web", "guest"])->group(function () {
     Route::prefix("login")->group(function () {
-        Route::get("/", [LoginController::class, "login"]);
+        Route::get("/", [LoginController::class, "login"])->name('login');
         Route::post("/", [LoginController::class, "post_login"]);
+    });
+
+    Route::prefix('forgot-password')->group(function () {
+        Route::get('/', [ResetPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+        Route::post('/', [ResetPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    });
+
+    Route::prefix('reset-password')->group(function () {
+        Route::get('/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+        Route::post('/', [ResetPasswordController::class, 'reset'])->name('password.update');
     });
 });
 
@@ -28,6 +40,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
             User::ROLE_ADMIN,
             User::ROLE_OPERATOR,
             User::ROLE_PIMPINAN,
+            User::ROLE_UPTD,
         ]));
 
         Route::prefix("machine")->group(function () {
@@ -35,7 +48,17 @@ Route::middleware(["web", "autentikasi"])->group(function () {
                 User::ROLE_ADMIN,
                 User::ROLE_OPERATOR,
                 User::ROLE_PIMPINAN,
+                User::ROLE_UPTD,
             ]));
+        });
+
+        Route::prefix('prediksi')->group(function () {
+            Route::get('/', [AppController::class, 'prediksi'])->middleware('role:' . implode(',', [
+                User::ROLE_ADMIN,
+                User::ROLE_OPERATOR,
+                User::ROLE_PIMPINAN,
+                User::ROLE_UPTD,
+            ]))->name('prediksi.index');
         });
 
         Route::prefix("laporan")->group(function () {
@@ -43,16 +66,19 @@ Route::middleware(["web", "autentikasi"])->group(function () {
                 User::ROLE_ADMIN,
                 User::ROLE_OPERATOR,
                 User::ROLE_PIMPINAN,
+                User::ROLE_UPTD,
             ]));
             Route::get("/excel", [LaporanController::class, "exportExcel"])->middleware("role:" . implode(",", [
                 User::ROLE_ADMIN,
                 User::ROLE_OPERATOR,
                 User::ROLE_PIMPINAN,
+                User::ROLE_UPTD,
             ]));
             Route::get("/pdf", [LaporanController::class, "exportPdf"])->middleware("role:" . implode(",", [
                 User::ROLE_ADMIN,
                 User::ROLE_OPERATOR,
                 User::ROLE_PIMPINAN,
+                User::ROLE_UPTD,
             ]));
         });
 
@@ -61,6 +87,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
                 User::ROLE_ADMIN,
                 User::ROLE_OPERATOR,
                 User::ROLE_PIMPINAN,
+                User::ROLE_UPTD,
             ]));
             Route::get("/create", [ProduksiManggaController::class, "create"])->middleware("role:" . implode(",", [
                 User::ROLE_ADMIN,
@@ -74,6 +101,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
                 User::ROLE_ADMIN,
                 User::ROLE_OPERATOR,
                 User::ROLE_PIMPINAN,
+                User::ROLE_UPTD,
             ]));
             Route::get("/{id}/edit", [ProduksiManggaController::class, "edit"])->middleware("role:" . implode(",", [
                 User::ROLE_ADMIN,
@@ -89,6 +117,14 @@ Route::middleware(["web", "autentikasi"])->group(function () {
             ]));
         });
 
+        Route::prefix("kecamatan")->group(function() {
+            Route::get("/", [KecamatanController::class, "index"])->middleware("role:" . User::ROLE_ADMIN)->name("kecamatan.index");
+            Route::post("/", [KecamatanController::class, "store"])->middleware("role:" . User::ROLE_ADMIN)->name("kecamatan.store");
+            Route::put("/{id}", [KecamatanController::class, "update"])->middleware("role:" . User::ROLE_ADMIN)->name("kecamatan.update");
+            Route::post("/{id}/toggle", [KecamatanController::class, "toggleStatus"])->middleware("role:" . User::ROLE_ADMIN)->name("kecamatan.toggle");
+            Route::delete("/{id}", [KecamatanController::class, "destroy"])->middleware("role:" . User::ROLE_ADMIN)->name("kecamatan.destroy");
+        });
+
         Route::prefix("users")->group(function() {
             Route::get("/", [UsersController::class, "index"])->middleware("role:" . User::ROLE_ADMIN);
             Route::post("/", [UsersController::class, "store"])->middleware("role:" . User::ROLE_ADMIN);
@@ -102,6 +138,7 @@ Route::middleware(["web", "autentikasi"])->group(function () {
                 User::ROLE_ADMIN,
                 User::ROLE_OPERATOR,
                 User::ROLE_PIMPINAN,
+                User::ROLE_UPTD,
             ]));
             Route::post("/", [VarietasManggaController::class, "store"])->middleware("role:" . implode(",", [
                 User::ROLE_ADMIN,
