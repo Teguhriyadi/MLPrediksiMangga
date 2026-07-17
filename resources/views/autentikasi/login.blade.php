@@ -306,7 +306,7 @@
                             <label class="form-label" for="username">Username</label>
                             <input type="text" name="username" id="username"
                                 class="form-control @error('username') is-invalid @enderror"
-                                placeholder="Masukkan username" value="{{ old('username') }}" required autofocus>
+                                placeholder="Masukkan username" value="{{ old('username') }}" autofocus>
                             @error('username')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -316,7 +316,7 @@
                             <label class="form-label" for="password">Password</label>
                             <input type="password" name="password" id="password"
                                 class="form-control @error('password') is-invalid @enderror"
-                                placeholder="Masukkan password" required>
+                                placeholder="Masukkan password">
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
