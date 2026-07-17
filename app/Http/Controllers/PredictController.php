@@ -39,7 +39,7 @@ class PredictController extends Controller
         }
 
         try {
-            $response = Http::timeout(20)->post(rtrim((string) env('APP_PYTHON'), '/') . "/predict", [
+            $response = Http::timeout(20)->post(rtrim((string) config('app.env_python'), '/') . "/predict", [
                 'data' => $data,
                 'steps' => 4,
                 'kecamatan' => $selectedKecamatan,

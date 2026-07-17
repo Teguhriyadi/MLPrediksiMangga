@@ -170,7 +170,7 @@ class ProduksiManggaController extends Controller
 
     private function requestPrediction(Collection $historiKecamatan, int $steps = 4, ?string $kecamatan = null): array
     {
-        $serviceUrl = rtrim((string) env("APP_PYTHON"), "/");
+        $serviceUrl = rtrim((string) config('app.env_python'), "/");
 
         if ($serviceUrl === "" || $historiKecamatan->isEmpty()) {
             return [];
