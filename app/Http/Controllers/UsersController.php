@@ -39,6 +39,7 @@ class UsersController extends Controller
                 "username" => $validated["username"],
                 "email" => $validated["email"],
                 "password" => bcrypt("password"),
+                "must_reset_password" => true,
                 "role" => $validated["role"],
                 "kecamatan" => $validated["kecamatan"] ?? null,
                 "nomor_hp" => $validated["nomor_hp"],

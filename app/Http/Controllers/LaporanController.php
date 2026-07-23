@@ -79,6 +79,7 @@ class LaporanController extends Controller
 
         $mappedRows = $rows->map(function ($item, $index) {
             $produktvitas = (float) $item->luas_panen > 0 ? ((float) $item->produksi / (float) $item->luas_panen) : 0;
+            $produksiPerPohon = (float) ($item->jumlah_pohon ?? 0) > 0 ? ((float) $item->produksi / (float) $item->jumlah_pohon) : 0;
 
             return [
                 'No' => $index + 1,
@@ -89,10 +90,10 @@ class LaporanController extends Controller
                 'Luas Tanam (ha)' => number_format((float) $item->luas_tanam, 2, ',', '.'),
                 'Luas Panen (ha)' => number_format((float) $item->luas_panen, 2, ',', '.'),
                 'Jumlah Pohon' => number_format((float) ($item->jumlah_pohon ?? 0), 0, ',', '.'),
-                'Curah Hujan (mm)' => number_format((float) $item->curah_hujan, 2, ',', '.'),
-                'Suhu (C)' => number_format((float) $item->suhu, 2, ',', '.'),
+                'Umur Tanaman (tahun)' => number_format((float) ($item->umur_tanaman ?? 0), 0, ',', '.'),
                 'Produksi (ton)' => number_format((float) $item->produksi, 2, ',', '.'),
                 'Produktivitas (ton/ha)' => number_format($produktvitas, 2, ',', '.'),
+                'Produksi per Pohon (ton)' => number_format($produksiPerPohon, 4, ',', '.'),
             ];
         });
 
@@ -119,8 +120,7 @@ class LaporanController extends Controller
             ->selectRaw('SUM(produksi) as total_produksi')
             ->selectRaw('AVG(produksi) as rata_produksi')
             ->selectRaw('SUM(luas_panen) as total_luas_panen')
-            ->selectRaw('AVG(curah_hujan) as rata_curah_hujan')
-            ->selectRaw('AVG(suhu) as rata_suhu')
+            ->selectRaw('SUM(jumlah_pohon) as total_jumlah_pohon')
             ->groupBy('kecamatan')
             ->orderBy('kecamatan')
             ->get();
@@ -135,9 +135,8 @@ class LaporanController extends Controller
                 'Total Produksi (ton)' => number_format((float) $item->total_produksi, 2, ',', '.'),
                 'Rata-rata Produksi (ton)' => number_format((float) $item->rata_produksi, 2, ',', '.'),
                 'Total Luas Panen (ha)' => number_format((float) $item->total_luas_panen, 2, ',', '.'),
+                'Jumlah Pohon' => number_format((float) $item->total_jumlah_pohon, 0, ',', '.'),
                 'Produktivitas (ton/ha)' => number_format($produktvitas, 2, ',', '.'),
-                'Rata Curah Hujan (mm)' => number_format((float) $item->rata_curah_hujan, 2, ',', '.'),
-                'Rata Suhu (C)' => number_format((float) $item->rata_suhu, 2, ',', '.'),
             ];
         });
 
@@ -164,7 +163,7 @@ class LaporanController extends Controller
             ->selectRaw('SUM(produksi) as total_produksi')
             ->selectRaw('AVG(produksi) as rata_produksi')
             ->selectRaw('SUM(luas_panen) as total_luas_panen')
-            ->selectRaw('AVG(serangan_hama) as rata_serangan_hama')
+            ->selectRaw('AVG(jumlah_pohon) as rata_jumlah_pohon')
             ->groupBy('tahun')
             ->orderBy('tahun')
             ->get();
@@ -180,7 +179,7 @@ class LaporanController extends Controller
                 'Rata-rata Produksi (ton)' => number_format((float) $item->rata_produksi, 2, ',', '.'),
                 'Total Luas Panen (ha)' => number_format((float) $item->total_luas_panen, 2, ',', '.'),
                 'Produktivitas (ton/ha)' => number_format($produktvitas, 2, ',', '.'),
-                'Rata Serangan Hama (%)' => number_format((float) $item->rata_serangan_hama, 2, ',', '.'),
+                'Rata-rata Jumlah Pohon' => number_format((float) $item->rata_jumlah_pohon, 0, ',', '.'),
             ];
         });
 
@@ -194,7 +193,7 @@ class LaporanController extends Controller
                 ['label' => 'Jumlah Tahun', 'value' => $rows->count()],
                 ['label' => 'Total Produksi (ton)', 'value' => number_format((float) $rows->sum('total_produksi'), 2, ',', '.')],
                 ['label' => 'Rata-rata Produksi Tahunan', 'value' => number_format((float) $rows->avg('total_produksi'), 2, ',', '.')],
-                ['label' => 'Rata-rata Serangan Hama (%)', 'value' => number_format((float) $rows->avg('rata_serangan_hama'), 2, ',', '.')],
+                ['label' => 'Rata-rata Luas Panen (ha)', 'value' => number_format((float) $rows->avg('total_luas_panen'), 2, ',', '.')],
             ],
         ];
     }
@@ -377,7 +376,7 @@ class LaporanController extends Controller
 
     private function requestPrediction(Collection $historiKecamatan, int $steps = 4, ?string $kecamatan = null): array
     {
-        $serviceUrl = rtrim((string) env('APP_PYTHON'), '/');
+        $serviceUrl = rtrim((string) config('app.env_python'), '/');
 
         if ($serviceUrl === '' || $historiKecamatan->isEmpty()) {
             return [];
@@ -391,9 +390,6 @@ class LaporanController extends Controller
                     'tahun' => (int) $item->tahun,
                     'triwulan' => $item->triwulan,
                     'produksi' => (float) $item->produksi,
-                    'luas_panen' => (float) ($item->luas_panen ?? 0),
-                    'curah_hujan' => (float) ($item->curah_hujan ?? 0),
-                    'suhu' => (float) ($item->suhu ?? 0),
                 ];
             })->values()->all(),
         ];

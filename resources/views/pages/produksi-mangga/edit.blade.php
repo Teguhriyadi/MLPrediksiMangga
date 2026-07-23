@@ -42,19 +42,25 @@
         </div>
 
         <div class="form-group">
-            <label for="curah_hujan" class="form-label"> Curah Hujan </label>
-            <input type="number" class="form-control" name="curah_hujan" id="curah_hujan"
-                placeholder="Masukkan Curah Hujan" value="{{ $edit['curah_hujan'] }}">
+            <label for="jumlah_pohon" class="form-label"> Jumlah Pohon Produktif </label>
+            <input type="number" class="form-control" name="jumlah_pohon" id="jumlah_pohon"
+                placeholder="Masukkan Jumlah Pohon" value="{{ $edit['jumlah_pohon'] }}">
         </div>
 
         <div class="form-group">
-            <label for="suhu" class="form-label"> Suhu </label>
-            <input type="number" class="form-control" name="suhu" id="suhu" placeholder="Masukkan Suhu" value="{{ $edit['suhu'] }}">
+            <label for="umur_tanaman" class="form-label"> Umur Tanaman </label>
+            <input type="number" class="form-control" name="umur_tanaman" id="umur_tanaman" placeholder="Masukkan Umur Tanaman" value="{{ $edit['umur_tanaman'] }}">
         </div>
 
         <div class="form-group">
             <label for="produksi" class="form-label"> Produksi </label>
             <input type="number" class="form-control" name="produksi" id="produksi" placeholder="Masukkan Produksi" value="{{ $edit['produksi'] }}">
+        </div>
+
+        <div class="form-group">
+            <label for="catatan" class="form-label"> Catatan Lapangan </label>
+            <textarea class="form-control" name="catatan" id="catatan" rows="3"
+                placeholder="Tambahkan catatan jika diperlukan">{{ $edit['catatan'] }}</textarea>
         </div>
     </div>
     <div class="modal-footer">

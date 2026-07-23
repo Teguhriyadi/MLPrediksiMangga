@@ -43,6 +43,8 @@ Route::middleware(["web", "autentikasi"])->group(function () {
             User::ROLE_UPTD,
         ]));
 
+        Route::post('/password/force-reset', [AppController::class, 'forceResetPassword'])->name('password.force-reset');
+
         Route::prefix("machine")->group(function () {
             Route::post("/", [PredictController::class, "store"])->middleware("role:" . implode(",", [
                 User::ROLE_ADMIN,

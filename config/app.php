@@ -123,4 +123,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'smtp' => [
+        'host' => env('SMTP_HOST', '127.0.0.1'),
+        'port' => (int) env('SMTP_PORT', 2525),
+        'username' => env('SMTP_USER'),
+        'password' => env('SMTP_PASSWORD'),
+        'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+        'from_email' => env('SMTP_FROM_EMAIL', 'hello@example.com'),
+        'from_name' => env('SMTP_FROM_NAME', env('APP_NAME', 'Laravel')),
+    ],
+
 ];

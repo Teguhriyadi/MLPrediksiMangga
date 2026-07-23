@@ -17,6 +17,21 @@ class IsAutentikasiMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
+            $user = Auth::user();
+
+            if ($user && $user->must_reset_password) {
+                $allow = $request->is('pages/dashboard')
+                    || $request->is('pages/dashboard/*')
+                    || $request->is('pages/password/force-reset')
+                    || $request->is('pages/logout');
+
+                if (!$allow) {
+                    return redirect()
+                        ->to('/pages/dashboard')
+                        ->with('error', 'Silakan ubah password terlebih dahulu untuk melanjutkan.');
+                }
+            }
+
             return $next($request);
         }
 
