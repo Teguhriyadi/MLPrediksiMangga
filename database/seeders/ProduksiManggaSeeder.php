@@ -16,13 +16,6 @@ class ProduksiManggaSeeder extends Seeder
         $varietasMap = VarietasMangga::query()
             ->pluck('id', 'nama_varietas');
 
-        $templateTriwulan = [
-            'Q1' => ['curah_hujan' => 220, 'suhu' => 27, 'serangan_hama' => 12],
-            'Q2' => ['curah_hujan' => 180, 'suhu' => 29, 'serangan_hama' => 10],
-            'Q3' => ['curah_hujan' => 150, 'suhu' => 30, 'serangan_hama' => 8],
-            'Q4' => ['curah_hujan' => 200, 'suhu' => 28, 'serangan_hama' => 11],
-        ];
-
         $kecamatanProfiles = [
             ['kecamatan' => 'Haurgeulis', 'varietas' => 'Gedong Gincu', 'base_produksi' => 20.4, 'base_luas_tanam' => 74, 'base_pohon' => 275619],
             ['kecamatan' => 'Gantar', 'varietas' => 'Cengkir', 'base_produksi' => 7.1, 'base_luas_tanam' => 31, 'base_pohon' => 90250],
@@ -61,7 +54,7 @@ class ProduksiManggaSeeder extends Seeder
             $varietasId = $varietasMap[$profile['varietas']] ?? $varietasMap->first();
 
             for ($tahun = 2021; $tahun <= 2026; $tahun++) {
-                foreach ($templateTriwulan as $indexTriwulan => $iklim) {
+                foreach (['Q1', 'Q2', 'Q3', 'Q4'] as $indexTriwulan) {
                     $seasonalFactor = match ($indexTriwulan) {
                         'Q1' => 1.08,
                         'Q2' => 1.02,
@@ -88,10 +81,6 @@ class ProduksiManggaSeeder extends Seeder
                             'luas_panen' => $luasPanen,
                             'jumlah_pohon' => $jumlahPohon,
                             'umur_tanaman' => 5 + (($tahun + $indexKecamatan) % 7),
-                            'curah_hujan' => $iklim['curah_hujan'] + (($indexKecamatan % 6) * 4),
-                            'suhu' => $iklim['suhu'] + (($indexKecamatan % 3) * 0.4),
-                            'pupuk_organik' => round((450 + ($indexKecamatan * 8)) * $yearFactor, 2),
-                            'serangan_hama' => max(2, min(28, $iklim['serangan_hama'] + (($indexKecamatan % 5) - 2))),
                             'produksi' => $produksi,
                             'catatan' => 'Data contoh multi-kecamatan untuk simulasi analisis dan prediksi produktivitas mangga berbasis SARIMA.',
                         ]

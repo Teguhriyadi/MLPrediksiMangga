@@ -72,8 +72,8 @@
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Skor Risiko</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($indikator['skor_risiko'], 2, ',', '.') }}</div>
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Produksi per Pohon</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($indikator['produksi_per_pohon'], 4, ',', '.') }} ton</div>
                 </div>
             </div>
         </div>
@@ -114,22 +114,6 @@
                         <tr>
                             <th>Umur Tanaman</th>
                             <td>{{ $detail->umur_tanaman ?? '-' }} tahun</td>
-                        </tr>
-                        <tr>
-                            <th>Curah Hujan</th>
-                            <td>{{ number_format((float) $detail->curah_hujan, 2, ',', '.') }} mm</td>
-                        </tr>
-                        <tr>
-                            <th>Suhu</th>
-                            <td>{{ number_format((float) $detail->suhu, 2, ',', '.') }} C</td>
-                        </tr>
-                        <tr>
-                            <th>Pupuk Organik</th>
-                            <td>{{ number_format((float) ($detail->pupuk_organik ?? 0), 2, ',', '.') }} kg</td>
-                        </tr>
-                        <tr>
-                            <th>Serangan Hama</th>
-                            <td>{{ number_format((float) ($detail->serangan_hama ?? 0), 2, ',', '.') }}%</td>
                         </tr>
                         <tr>
                             <th>Status Produktivitas</th>
@@ -211,8 +195,8 @@
                     <div class="border rounded p-3 bg-light">
                         <div class="font-weight-bold text-dark mb-2">Interpretasi Singkat</div>
                         <p class="mb-0 text-muted">
-                            Bagian ini merangkum arah tren produksi, evaluasi akurasi model, dan kesiapan data histori.
-                            Grafik tren ditempatkan terpisah di bagian bawah agar tetap stabil saat tabel histori atau forecast berisi banyak data.
+                            Bagian ini merangkum arah tren produksi, evaluasi akurasi model, dan kesiapan histori produksi triwulanan
+                            yang menjadi input utama metode SARIMA.
                         </p>
                     </div>
                 </div>
@@ -236,9 +220,8 @@
                                 <tr>
                                     <th class="text-center">Periode</th>
                                     <th class="text-center">Produksi</th>
-                                    <th class="text-center">Curah Hujan</th>
-                                    <th class="text-center">Suhu</th>
                                     <th class="text-center">Luas Panen</th>
+                                    <th class="text-center">Jumlah Pohon</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -246,13 +229,12 @@
                                     <tr>
                                         <td class="text-center">{{ $item->tahun }} {{ $item->triwulan }}</td>
                                         <td class="text-center">{{ number_format((float) $item->produksi, 2, ',', '.') }}</td>
-                                        <td class="text-center">{{ number_format((float) $item->curah_hujan, 2, ',', '.') }}</td>
-                                        <td class="text-center">{{ number_format((float) $item->suhu, 2, ',', '.') }}</td>
                                         <td class="text-center">{{ number_format((float) $item->luas_panen, 2, ',', '.') }}</td>
+                                        <td class="text-center">{{ number_format((float) ($item->jumlah_pohon ?? 0), 0, ',', '.') }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center">Belum ada histori kecamatan.</td>
+                                        <td colspan="4" class="text-center">Belum ada histori kecamatan.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

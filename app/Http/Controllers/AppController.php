@@ -6,6 +6,7 @@ use App\Models\Kecamatan;
 use App\Models\ProduksiMangga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AppController extends Controller
 {
@@ -26,12 +27,18 @@ class AppController extends Controller
             ->when($selectedKecamatan, fn ($query, $kecamatan) => $query->where('kecamatan', $kecamatan))
             ->orderBy('tahun', 'ASC')
             ->orderByRaw($this->quarterOrderSql())
-            ->get();
+            ->get(['tahun', 'triwulan', 'produksi']);
 
         $data["totalRecord"] = $rawProduksi->count();
         $data["periodeMin"] = $rawProduksi->min('tahun');
         $data["periodeMax"] = $rawProduksi->max('tahun');
         $data["isAgregatKabupaten"] = !filled($selectedKecamatan);
+        $data["sarimaConfig"] = [
+            'variabel_input' => 'Produksi per triwulan',
+            'indeks_waktu' => 'Tahun dan triwulan',
+            'periode_musiman' => 4,
+            'horizon_prediksi' => 4,
+        ];
         $data["produksi"] = filled($selectedKecamatan)
             ? $rawProduksi
             : $rawProduksi
@@ -96,6 +103,36 @@ class AppController extends Controller
         Auth::logout();
 
         return redirect("/login")->with("success", "Anda Berhasil Logout");
+    }
+
+    public function forceResetPassword(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user || !$user->must_reset_password) {
+            return redirect('/pages/dashboard');
+        }
+
+        $validated = $request->validate([
+            'password_lama' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'password_lama.required' => 'Password saat ini wajib diisi.',
+            'password.required' => 'Password baru wajib diisi.',
+            'password.min' => 'Password baru minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+        ]);
+
+        if (!Hash::check($validated['password_lama'], $user->password)) {
+            return back()->with('error', 'Password saat ini tidak sesuai.');
+        }
+
+        $user->forceFill([
+            'password' => Hash::make($validated['password']),
+            'must_reset_password' => false,
+        ])->save();
+
+        return redirect('/pages/dashboard')->with('success', 'Password berhasil diperbarui. Silakan gunakan password baru saat login berikutnya.');
     }
 
     private function quarterOrderSql(string $direction = 'ASC'): string

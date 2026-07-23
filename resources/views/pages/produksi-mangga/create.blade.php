@@ -90,28 +90,9 @@
                         </div>
 
                         <div class="form-row">
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-12">
                                 <label for="umur_tanaman">Umur Tanaman (tahun)</label>
                                 <input type="number" class="form-control" name="umur_tanaman" id="umur_tanaman" value="{{ old('umur_tanaman') }}" placeholder="Contoh: 8" required>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="curah_hujan">Curah Hujan (mm)</label>
-                                <input type="number" step="0.01" class="form-control" name="curah_hujan" id="curah_hujan" value="{{ old('curah_hujan') }}" placeholder="Contoh: 180" required>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="suhu">Suhu Rata-rata (C)</label>
-                                <input type="number" step="0.01" class="form-control" name="suhu" id="suhu" value="{{ old('suhu') }}" placeholder="Contoh: 29" required>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="pupuk_organik">Pupuk Organik (kg)</label>
-                                <input type="number" step="0.01" class="form-control" name="pupuk_organik" id="pupuk_organik" value="{{ old('pupuk_organik') }}" placeholder="Masukkan total pupuk organik" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="serangan_hama">Serangan Hama (%)</label>
-                                <input type="number" step="0.01" class="form-control" name="serangan_hama" id="serangan_hama" value="{{ old('serangan_hama') }}" placeholder="Contoh: 12.5" required>
                             </div>
                         </div>
 
@@ -146,12 +127,11 @@
                     <h6 class="m-0 font-weight-bold text-primary">Kenapa Form Ini Lebih Kuat?</h6>
                 </div>
                 <div class="card-body">
-                    <p class="mb-3">Struktur data ini tidak hanya menyimpan produksi, tetapi juga variabel yang mendukung analisis produktivitas perkebunan.</p>
+                    <p class="mb-3">Form ini difokuskan pada data inti yang benar-benar dipakai untuk membentuk histori produksi dan menghitung prediksi SARIMA.</p>
                     <ul class="pl-3 mb-0">
                         <li>Memungkinkan analisis per kecamatan dan per triwulan.</li>
-                        <li>Mencatat faktor budidaya seperti umur tanaman dan pupuk organik.</li>
-                        <li>Mencatat faktor iklim seperti curah hujan dan suhu.</li>
-                        <li>Mencatat faktor risiko seperti serangan hama.</li>
+                        <li>Menyimpan identitas varietas, luas tanam, luas panen, dan jumlah pohon.</li>
+                        <li>Mencatat umur tanaman dan produksi aktual setiap periode.</li>
                         <li>Menyediakan histori yang siap dikirim ke service Python SARIMA.</li>
                     </ul>
                 </div>

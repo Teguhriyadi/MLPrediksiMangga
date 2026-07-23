@@ -229,6 +229,82 @@
         </div>
     @endif
 
+    @if (auth()->user() && auth()->user()->must_reset_password)
+        <div style="position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);z-index:2000;padding:24px;display:flex;align-items:center;justify-content:center;">
+            <div style="width:100%;max-width:540px;background:#ffffff;border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 30px 60px rgba(15,23,42,0.22);overflow:hidden;">
+                <div style="padding:22px 22px 18px;background:linear-gradient(135deg,#0f172a 0%,#1d4ed8 58%,#38bdf8 100%);color:#ffffff;">
+                    <div style="display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.14);font-size:12px;font-weight:700;letter-spacing:0.04em;">
+                        <i class="fas fa-shield-alt"></i>
+                        KEAMANAN AKUN
+                    </div>
+                    <h4 style="margin:14px 0 8px;font-size:24px;font-weight:700;line-height:1.25;">
+                        Ganti Password Pertama Kali
+                    </h4>
+                    <p style="margin:0;font-size:14px;line-height:1.8;color:rgba(255,255,255,0.88);">
+                        Akun ini masih menggunakan password default. Silakan buat password baru terlebih dahulu sebelum melanjutkan ke menu lain.
+                    </p>
+                </div>
+
+                <form action="{{ route('password.force-reset') }}" method="POST">
+                    @csrf
+                    <div style="padding:22px 22px 10px;">
+                        @if ($errors->any())
+                            <div class="alert alert-danger" style="border-radius:16px;">
+                                <strong>Periksa kembali:</strong>
+                                <ul class="mb-0 mt-2 pl-3">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <div style="padding:14px 16px;border-radius:16px;border:1px solid #e2e8f0;background:#f8fafc;margin-bottom:18px;">
+                            <div style="font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:6px;">
+                                Informasi
+                            </div>
+                            <div style="font-size:13px;line-height:1.8;color:#475569;">
+                                Setelah password berhasil diganti, permintaan ini tidak akan muncul lagi saat login berikutnya.
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="font-weight:600;color:#0f172a;">Password saat ini</label>
+                            <input type="password" name="password_lama" class="form-control"
+                                placeholder="Masukkan password default saat ini" required
+                                style="border-radius:14px;min-height:48px;">
+                        </div>
+
+                        <div class="form-group">
+                            <label style="font-weight:600;color:#0f172a;">Password baru</label>
+                            <input type="password" name="password" class="form-control"
+                                placeholder="Minimal 8 karakter" required
+                                style="border-radius:14px;min-height:48px;">
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label style="font-weight:600;color:#0f172a;">Konfirmasi password baru</label>
+                            <input type="password" name="password_confirmation" class="form-control"
+                                placeholder="Ulangi password baru" required
+                                style="border-radius:14px;min-height:48px;">
+                        </div>
+                    </div>
+
+                    <div style="padding:0 22px 22px;display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;">
+                        <a href="{{ url('/pages/logout') }}" class="btn btn-outline-secondary"
+                            style="border-radius:14px;min-height:46px;font-weight:600;padding:10px 18px;">
+                            Logout
+                        </a>
+                        <button type="submit" class="btn btn-primary"
+                            style="border-radius:14px;min-height:46px;font-weight:600;padding:10px 18px;">
+                            Simpan Password Baru
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
     <div class="card dashboard-hero-card mt-3">
         <div class="card-body p-4 p-lg-5">
             <span class="dashboard-chip">
@@ -237,8 +313,9 @@
             </span>
             <h4 class="dashboard-hero-title">Dashboard Prediksi Produktivitas Mangga Berbasis Time Series</h4>
             <p class="dashboard-hero-text">
-                Sistem ini menggunakan metode <b>SARIMA (Seasonal ARIMA)</b> untuk menganalisis pola produksi mangga per triwulan,
-                membandingkan kondisi antar kecamatan, dan menghasilkan prediksi yang dapat dipakai sebagai dasar evaluasi produktivitas.
+                Dashboard ini hanya menggunakan deret waktu <b>produksi mangga per triwulan</b> sebagai input model
+                <b>SARIMA (Seasonal ARIMA)</b>. Variabel seperti curah hujan, suhu, dan faktor non-time-series tidak
+                dipakai pada proses prediksi di halaman ini.
             </p>
         </div>
     </div>
@@ -250,9 +327,9 @@
                     <div class="dashboard-stat-icon primary">
                         <i class="fas fa-database"></i>
                     </div>
-                    <div class="dashboard-stat-label">Dataset Aktif</div>
-                    <div class="dashboard-stat-value">{{ number_format($totalRecord, 0, ',', '.') }} Record</div>
-                    <p class="dashboard-stat-caption">Total histori produksi yang digunakan untuk analisis dan pemodelan.</p>
+                    <div class="dashboard-stat-label">Observasi Time Series</div>
+                    <div class="dashboard-stat-value">{{ number_format($totalRecord, 0, ',', '.') }} Titik</div>
+                    <p class="dashboard-stat-caption">Jumlah titik data produksi triwulanan yang dipakai sebagai input model.</p>
                 </div>
             </div>
         </div>
@@ -262,9 +339,9 @@
                     <div class="dashboard-stat-icon success">
                         <i class="fas fa-calendar-alt"></i>
                     </div>
-                    <div class="dashboard-stat-label">Periode Dataset</div>
-                    <div class="dashboard-stat-value">{{ $periodeMin ?? '-' }} - {{ $periodeMax ?? '-' }}</div>
-                    <p class="dashboard-stat-caption">Rentang tahun histori produksi mangga yang tersedia di sistem.</p>
+                    <div class="dashboard-stat-label">Musiman SARIMA</div>
+                    <div class="dashboard-stat-value">{{ $sarimaConfig['periode_musiman'] }} Triwulan</div>
+                    <p class="dashboard-stat-caption">Satu siklus musiman mewakili 4 triwulan dalam satu tahun pengamatan.</p>
                 </div>
             </div>
         </div>
@@ -274,10 +351,10 @@
                     <div class="dashboard-stat-icon warning">
                         <i class="fas fa-map-marked-alt"></i>
                     </div>
-                    <div class="dashboard-stat-label">Mode Analisis</div>
-                    <div class="dashboard-stat-value">{{ $selectedKecamatan ?: 'Semua Kecamatan' }}</div>
+                    <div class="dashboard-stat-label">Variabel Input</div>
+                    <div class="dashboard-stat-value">{{ $sarimaConfig['variabel_input'] }}</div>
                     <p class="dashboard-stat-caption">
-                        {{ $isAgregatKabupaten ? 'Menampilkan akumulasi kabupaten per triwulan.' : 'Menampilkan seri khusus kecamatan terpilih.' }}
+                        Model membaca indeks waktu {{ $sarimaConfig['indeks_waktu'] }} dan nilai produksi sebagai seri utama.
                     </p>
                 </div>
             </div>
@@ -290,7 +367,7 @@
                 <div class="col-lg-5 mb-3 mb-lg-0">
                     <h5 class="dashboard-filter-title">Filter Kecamatan</h5>
                     <p class="dashboard-filter-subtitle">
-                        Pilih wilayah analisis untuk menyesuaikan data, ringkasan, dan hasil prediksi pada dashboard.
+                        Pilih wilayah analisis untuk membentuk satu seri produksi triwulanan yang akan dihitung oleh model SARIMA.
                     </p>
                 </div>
                 <div class="col-lg-7">
@@ -323,12 +400,12 @@
                     <span class="meta-value">{{ $selectedKecamatan ?: 'Seluruh Wilayah' }}</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-label">Mode Grafik</span>
-                    <span class="meta-value">{{ $isAgregatKabupaten ? 'Agregat Kabupaten' : 'Spesifik Kecamatan' }}</span>
+                    <span class="meta-label">Rentang Tahun</span>
+                    <span class="meta-value">{{ $periodeMin ?? '-' }} - {{ $periodeMax ?? '-' }}</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-label">Jumlah Opsi</span>
-                    <span class="meta-value">{{ count($opsiKecamatan) }} Kecamatan</span>
+                    <span class="meta-label">Horizon Prediksi</span>
+                    <span class="meta-value">{{ $sarimaConfig['horizon_prediksi'] }} Triwulan</span>
                 </div>
             </div>
         </div>
@@ -349,7 +426,8 @@
                 <div>
                     <h5 class="dashboard-analysis-title">Analisis Prediksi Produksi Mangga</h5>
                     <p class="dashboard-analysis-subtitle">
-                        Jalankan prediksi berdasarkan histori <b>{{ $selectedKecamatan ?: 'seluruh kecamatan' }}</b> untuk melihat proyeksi periode berikutnya.
+                        Jalankan prediksi berdasarkan histori produksi <b>{{ $selectedKecamatan ?: 'seluruh kecamatan' }}</b>
+                        untuk memproyeksikan {{ $sarimaConfig['horizon_prediksi'] }} triwulan berikutnya.
                     </p>
                 </div>
 
@@ -374,7 +452,7 @@
                     <h5>Analisis Hasil Prediksi</h5>
 
                     <p>
-                        Berdasarkan hasil perhitungan menggunakan metode SARIMA,
+                        Berdasarkan hasil perhitungan metode SARIMA yang hanya memanfaatkan seri produksi per triwulan,
                         untuk wilayah <b>{{ $selectedKecamatan ?: 'gabungan seluruh data' }}</b>,
                         produksi mangga diprediksi sebesar
                         <b>{{ $prediksi }} ton</b>.
@@ -400,7 +478,7 @@
 
             {{-- 🔥 CHART --}}
             <div class="mb-3 text-muted">
-                Grafik menampilkan histori produksi untuk <b>{{ $selectedKecamatan ?: 'seluruh kecamatan' }}</b>.
+                Grafik menampilkan seri input SARIMA berupa histori produksi triwulanan untuk <b>{{ $selectedKecamatan ?: 'seluruh kecamatan' }}</b>.
                 @if ($isAgregatKabupaten)
                     Saat semua kecamatan dipilih, data ditampilkan sebagai akumulasi kabupaten per triwulan agar grafik tetap valid.
                 @else

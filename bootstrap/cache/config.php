@@ -1,4 +1,26 @@
 <?php return array (
+  'hashing' => 
+  array (
+    'driver' => 'bcrypt',
+    'bcrypt' => 
+    array (
+      'rounds' => '12',
+      'verify' => true,
+      'limit' => NULL,
+    ),
+    'argon' => 
+    array (
+      'memory' => 65536,
+      'threads' => 1,
+      'time' => 4,
+      'verify' => true,
+    ),
+    'rehash_on_login' => true,
+  ),
+  'concurrency' => 
+  array (
+    'default' => 'process',
+  ),
   'broadcasting' => 
   array (
     'default' => 'log',
@@ -55,9 +77,13 @@
       ),
     ),
   ),
-  'concurrency' => 
+  'view' => 
   array (
-    'default' => 'process',
+    'paths' => 
+    array (
+      0 => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/resources/views',
+    ),
+    'compiled' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/framework/views',
   ),
   'cors' => 
   array (
@@ -87,32 +113,6 @@
     'max_age' => 0,
     'supports_credentials' => false,
   ),
-  'hashing' => 
-  array (
-    'driver' => 'bcrypt',
-    'bcrypt' => 
-    array (
-      'rounds' => '12',
-      'verify' => true,
-      'limit' => NULL,
-    ),
-    'argon' => 
-    array (
-      'memory' => 65536,
-      'threads' => 1,
-      'time' => 4,
-      'verify' => true,
-    ),
-    'rehash_on_login' => true,
-  ),
-  'view' => 
-  array (
-    'paths' => 
-    array (
-      0 => 'C:\\Project\\MLPrediksiMangga\\resources\\views',
-    ),
-    'compiled' => 'C:\\Project\\MLPrediksiMangga\\storage\\framework\\views',
-  ),
   'app' => 
   array (
     'name' => 'Laravel',
@@ -126,7 +126,7 @@
     'fallback_locale' => 'en',
     'faker_locale' => 'en_US',
     'cipher' => 'AES-256-CBC',
-    'key' => 'base64:iZEROybJtbYOPr301l1r5JQvhXm97cmCoWJFDmVd55I=',
+    'key' => 'base64:rVL+HJlw1cAHRfMaewFjbGnpebxY7+GfqTIvbH5tW/Y=',
     'previous_keys' => 
     array (
     ),
@@ -161,6 +161,7 @@
       21 => 'Illuminate\\Validation\\ValidationServiceProvider',
       22 => 'Illuminate\\View\\ViewServiceProvider',
       23 => 'App\\Providers\\AppServiceProvider',
+      24 => 'Barryvdh\\DomPDF\\ServiceProvider',
     ),
     'aliases' => 
     array (
@@ -212,6 +213,16 @@
       'Vite' => 'Illuminate\\Support\\Facades\\Vite',
     ),
     'env_python' => 'http://127.0.0.1:5000',
+    'smtp' => 
+    array (
+      'host' => 'smtp.gmail.com',
+      'port' => 587,
+      'username' => 'ilham.teguh55@gmail.com',
+      'password' => 'pobo ypmk sbpv ised',
+      'encryption' => 'tls',
+      'from_email' => 'noreply@wangik.com',
+      'from_name' => 'Wangik',
+    ),
   ),
   'auth' => 
   array (
@@ -279,8 +290,8 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'C:\\Project\\MLPrediksiMangga\\storage\\framework/cache/data',
-        'lock_path' => 'C:\\Project\\MLPrediksiMangga\\storage\\framework/cache/data',
+        'path' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/framework/cache/data',
+        'lock_path' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -345,7 +356,7 @@
       array (
         'driver' => 'sqlite',
         'url' => NULL,
-        'database' => 'db_project_deteksi_mangga',
+        'database' => 'ml_produktivitas_mangga',
         'prefix' => '',
         'foreign_key_constraints' => true,
         'busy_timeout' => NULL,
@@ -359,7 +370,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'db_project_deteksi_mangga',
+        'database' => 'ml_produktivitas_mangga',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -379,7 +390,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'db_project_deteksi_mangga',
+        'database' => 'ml_produktivitas_mangga',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -399,7 +410,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'db_project_deteksi_mangga',
+        'database' => 'ml_produktivitas_mangga',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -414,7 +425,7 @@
         'url' => NULL,
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'db_project_deteksi_mangga',
+        'database' => 'ml_produktivitas_mangga',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -472,7 +483,7 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Project\\MLPrediksiMangga\\storage\\app/private',
+        'root' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/app/private',
         'serve' => true,
         'throw' => false,
         'report' => false,
@@ -480,7 +491,7 @@
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Project\\MLPrediksiMangga\\storage\\app/public',
+        'root' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/app/public',
         'url' => 'http://localhost/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -502,7 +513,7 @@
     ),
     'links' => 
     array (
-      'C:\\Project\\MLPrediksiMangga\\public\\storage' => 'C:\\Project\\MLPrediksiMangga\\storage\\app/public',
+      '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/public/storage' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/app/public',
     ),
   ),
   'logging' => 
@@ -527,14 +538,14 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'C:\\Project\\MLPrediksiMangga\\storage\\logs/laravel.log',
+        'path' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/logs/laravel.log',
         'level' => 'debug',
         'replace_placeholders' => true,
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'C:\\Project\\MLPrediksiMangga\\storage\\logs/laravel.log',
+        'path' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
         'replace_placeholders' => true,
@@ -599,7 +610,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'C:\\Project\\MLPrediksiMangga\\storage\\logs/laravel.log',
+        'path' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/logs/laravel.log',
       ),
     ),
   ),
@@ -613,10 +624,10 @@
         'transport' => 'smtp',
         'scheme' => NULL,
         'url' => NULL,
-        'host' => '${SMTP_HOST}',
-        'port' => '${SMTP_PORT}',
-        'username' => '${SMTP_USER}',
-        'password' => '${SMTP_PASSWORD}',
+        'host' => 'smtp.gmail.com',
+        'port' => 587,
+        'username' => 'ilham.teguh55@gmail.com',
+        'password' => 'pobo ypmk sbpv ised',
         'timeout' => NULL,
         'local_domain' => 'localhost',
       ),
@@ -669,15 +680,15 @@
     ),
     'from' => 
     array (
-      'address' => '${SMTP_FROM_EMAIL}',
-      'name' => '${SMTP_FROM_NAME}',
+      'address' => 'noreply@wangik.com',
+      'name' => 'Wangik',
     ),
     'markdown' => 
     array (
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'C:\\Project\\MLPrediksiMangga\\resources\\views/vendor/mail',
+        0 => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/resources/views/vendor/mail',
       ),
       'extensions' => 
       array (
@@ -816,7 +827,7 @@
     'lifetime' => 120,
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\Project\\MLPrediksiMangga\\storage\\framework/sessions',
+    'files' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -833,6 +844,183 @@
     'same_site' => 'lax',
     'partitioned' => false,
     'serialization' => 'json',
+  ),
+  'dompdf' => 
+  array (
+    'show_warnings' => false,
+    'public_path' => NULL,
+    'convert_entities' => true,
+    'options' => 
+    array (
+      'font_dir' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/fonts',
+      'font_cache' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/fonts',
+      'temp_dir' => '/var/folders/ds/9wbgcpg10sb3s9nb4qxzm5040000gn/T',
+      'chroot' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga',
+      'allowed_protocols' => 
+      array (
+        'data://' => 
+        array (
+          'rules' => 
+          array (
+          ),
+        ),
+        'file://' => 
+        array (
+          'rules' => 
+          array (
+          ),
+        ),
+        'http://' => 
+        array (
+          'rules' => 
+          array (
+          ),
+        ),
+        'https://' => 
+        array (
+          'rules' => 
+          array (
+          ),
+        ),
+      ),
+      'artifactPathValidation' => NULL,
+      'log_output_file' => NULL,
+      'enable_font_subsetting' => false,
+      'pdf_backend' => 'CPDF',
+      'default_media_type' => 'screen',
+      'default_paper_size' => 'a4',
+      'default_paper_orientation' => 'portrait',
+      'default_font' => 'serif',
+      'dpi' => 96,
+      'enable_php' => false,
+      'enable_javascript' => true,
+      'enable_remote' => false,
+      'allowed_remote_hosts' => NULL,
+      'font_height_ratio' => 1.1,
+      'enable_html5_parser' => true,
+    ),
+  ),
+  'excel' => 
+  array (
+    'exports' => 
+    array (
+      'chunk_size' => 1000,
+      'pre_calculate_formulas' => false,
+      'strict_null_comparison' => false,
+      'csv' => 
+      array (
+        'delimiter' => ',',
+        'enclosure' => '"',
+        'line_ending' => '
+',
+        'use_bom' => false,
+        'include_separator_line' => false,
+        'excel_compatibility' => false,
+        'output_encoding' => '',
+        'test_auto_detect' => true,
+      ),
+      'properties' => 
+      array (
+        'creator' => '',
+        'lastModifiedBy' => '',
+        'title' => '',
+        'description' => '',
+        'subject' => '',
+        'keywords' => '',
+        'category' => '',
+        'manager' => '',
+        'company' => '',
+      ),
+    ),
+    'imports' => 
+    array (
+      'read_only' => true,
+      'ignore_empty' => false,
+      'heading_row' => 
+      array (
+        'formatter' => 'slug',
+      ),
+      'csv' => 
+      array (
+        'delimiter' => NULL,
+        'enclosure' => '"',
+        'escape_character' => '\\',
+        'contiguous' => false,
+        'input_encoding' => 'guess',
+      ),
+      'properties' => 
+      array (
+        'creator' => '',
+        'lastModifiedBy' => '',
+        'title' => '',
+        'description' => '',
+        'subject' => '',
+        'keywords' => '',
+        'category' => '',
+        'manager' => '',
+        'company' => '',
+      ),
+      'cells' => 
+      array (
+        'middleware' => 
+        array (
+        ),
+      ),
+    ),
+    'extension_detector' => 
+    array (
+      'xlsx' => 'Xlsx',
+      'xlsm' => 'Xlsx',
+      'xltx' => 'Xlsx',
+      'xltm' => 'Xlsx',
+      'xls' => 'Xls',
+      'xlt' => 'Xls',
+      'ods' => 'Ods',
+      'ots' => 'Ods',
+      'slk' => 'Slk',
+      'xml' => 'Xml',
+      'gnumeric' => 'Gnumeric',
+      'htm' => 'Html',
+      'html' => 'Html',
+      'csv' => 'Csv',
+      'tsv' => 'Csv',
+      'pdf' => 'Dompdf',
+    ),
+    'value_binder' => 
+    array (
+      'default' => 'Maatwebsite\\Excel\\DefaultValueBinder',
+    ),
+    'cache' => 
+    array (
+      'driver' => 'memory',
+      'batch' => 
+      array (
+        'memory_limit' => 60000,
+      ),
+      'illuminate' => 
+      array (
+        'store' => NULL,
+      ),
+      'default_ttl' => 10800,
+    ),
+    'transactions' => 
+    array (
+      'handler' => 'db',
+      'db' => 
+      array (
+        'connection' => NULL,
+      ),
+    ),
+    'temporary_files' => 
+    array (
+      'local_path' => '/Users/teguhriyadi2909/Desktop/skripsi/MLPrediksiMangga/storage/framework/cache/laravel-excel',
+      'local_permissions' => 
+      array (
+      ),
+      'remote_disk' => NULL,
+      'remote_prefix' => NULL,
+      'force_resync_remote' => NULL,
+    ),
   ),
   'tinker' => 
   array (

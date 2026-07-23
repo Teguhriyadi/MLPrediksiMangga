@@ -49,10 +49,6 @@ class ProduksiManggaController extends Controller
             "luas_panen" => ["required", "numeric", "min:0.01", "lte:luas_tanam"],
             "jumlah_pohon" => ["required", "numeric", "min:1"],
             "umur_tanaman" => ["required", "integer", "min:1", "max:50"],
-            "curah_hujan" => ["required", "numeric", "min:0"],
-            "suhu" => ["required", "numeric", "min:0", "max:60"],
-            "pupuk_organik" => ["required", "numeric", "min:0"],
-            "serangan_hama" => ["required", "numeric", "min:0", "max:100"],
             "produksi" => ["required", "numeric", "min:0.01"],
             "catatan" => ["nullable", "string", "max:500"],
         ], [
@@ -129,9 +125,10 @@ class ProduksiManggaController extends Controller
             "varietas_mangga_id" => ["required", "exists:varietas_mangga,id"],
             "luas_tanam" => ["required", "numeric", "min:0.01"],
             "luas_panen" => ["required", "numeric", "min:0.01", "lte:luas_tanam"],
-            "curah_hujan" => ["required", "numeric", "min:0"],
-            "suhu" => ["required", "numeric", "min:0", "max:60"],
+            "jumlah_pohon" => ["required", "numeric", "min:1"],
+            "umur_tanaman" => ["required", "integer", "min:1", "max:50"],
             "produksi" => ["required", "numeric", "min:0.01"],
+            "catatan" => ["nullable", "string", "max:500"],
         ], [
             "luas_panen.lte" => "Luas panen tidak boleh melebihi luas tanam.",
         ]);
@@ -184,9 +181,6 @@ class ProduksiManggaController extends Controller
                     "tahun" => (int) $item->tahun,
                     "triwulan" => $item->triwulan,
                     "produksi" => (float) $item->produksi,
-                    "luas_panen" => (float) ($item->luas_panen ?? 0),
-                    "curah_hujan" => (float) ($item->curah_hujan ?? 0),
-                    "suhu" => (float) ($item->suhu ?? 0),
                 ];
             })->values()->all(),
         ];
@@ -216,18 +210,15 @@ class ProduksiManggaController extends Controller
         $luasPanen = (float) ($detail->luas_panen ?? 0);
         $jumlahPohon = (float) ($detail->jumlah_pohon ?? 0);
         $produksi = (float) ($detail->produksi ?? 0);
-        $seranganHama = (float) ($detail->serangan_hama ?? 0);
 
         $produktivitasLahan = $luasPanen > 0 ? $produksi / $luasPanen : 0;
         $rasioPanen = $luasTanam > 0 ? ($luasPanen / $luasTanam) * 100 : 0;
         $produksiPerPohon = $jumlahPohon > 0 ? $produksi / $jumlahPohon : 0;
-        $skorRisiko = min(100, max(0, ($seranganHama * 0.6) + (100 - $rasioPanen) * 0.4));
 
         return [
             "produktivitas_lahan" => round($produktivitasLahan, 2),
             "rasio_panen" => round($rasioPanen, 2),
             "produksi_per_pohon" => round($produksiPerPohon, 4),
-            "skor_risiko" => round($skorRisiko, 2),
             "status_produktivitas" => $produktivitasLahan >= 0.12 ? "Tinggi" : ($produktivitasLahan >= 0.08 ? "Sedang" : "Rendah"),
         ];
     }

@@ -49,8 +49,8 @@
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card border-left-warning shadow h-100 py-2">
                 <div class="card-body">
-                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Kecamatan Aktif</div>
-                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $ringkasan['kecamatan_aktif'] }}</div>
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Observasi SARIMA</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $ringkasan['total_data'] }}</div>
                 </div>
             </div>
         </div>
@@ -60,7 +60,7 @@
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <div>
                 <h6 class="m-0 font-weight-bold text-primary">Dataset Produktivitas Mangga</h6>
-                <small class="text-muted">Data disusun per kecamatan dan per triwulan untuk mendukung analisis SARIMA.</small>
+                <small class="text-muted">Data disusun per kecamatan dan triwulan, dengan fokus pada histori produksi yang dipakai metode SARIMA.</small>
             </div>
             @if ($canManageProduksi)
                 <a href="{{ url('/pages/produksi-mangga/create') }}" class="btn btn-primary btn-sm">

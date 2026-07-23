@@ -46,6 +46,7 @@ class UserSeeder extends Seeder
                     "nama" => $user["nama"],
                     "email" => $user["email"],
                     "password" => bcrypt("password"),
+                    "must_reset_password" => true,
                     "role" => $user["role"],
                     "nomor_hp" => $user["nomor_hp"],
                     "alamat" => $user["alamat"],
