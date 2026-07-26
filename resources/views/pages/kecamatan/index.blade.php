@@ -94,9 +94,16 @@
                         @method('PUT')
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="nama{{ $kecamatan->id }}">Nama Kecamatan</label>
-                                <input type="text" class="form-control" id="nama{{ $kecamatan->id }}" name="nama"
-                                    value="{{ $kecamatan->nama }}" required>
+                                <label for="nama{{ $kecamatan->id }}">
+                                    Nama Kecamatan
+                                    <small class="text-danger">*</small>
+                                </label>
+                                <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama{{ $kecamatan->id }}" placeholder="Masukkan Nama Kecamatan" name="nama"
+                                    value="{{ old('nama', $kecamatan->nama) }}">
+
+                                @error('nama')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -129,8 +136,15 @@
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="nama">Nama Kecamatan</label>
-                            <input type="text" class="form-control" id="nama" name="nama" required>
+                            <label for="nama">
+                                Nama Kecamatan
+                                <small class="text-danger">*</small>
+                            </label>
+                            <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" placeholder="Masukkan Nama Kecamatan">
+
+                            @error('nama')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer">

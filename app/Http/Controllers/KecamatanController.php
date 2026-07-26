@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kecamatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class KecamatanController extends Controller
 {
@@ -18,6 +19,10 @@ class KecamatanController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255|unique:kecamatans,nama',
+        ], [
+            "nama.required" => "Nama Kecamatan Wajib Diisi",
+            "nama.unique" => "Nama Kecamatan Sudah Digunakan",
+            "nama.max" => "Nama Kecamatan Maksimal 255 Karakter",
         ]);
 
         try {
@@ -37,7 +42,11 @@ class KecamatanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama' => 'required|string|max:255|unique:kecamatans,nama,' . $id,
+            "nama" => ["required", "string", "max:255", Rule::unique("kecamatans", "nama")->ignore($id, "id")],
+        ], [
+            "nama.required" => "Nama Kecamatan Wajib Diisi",
+            "nama.unique" => "Nama Kecamatan Sudah Digunakan",
+            "nama.max" => "Nama Kecamatan Maksimal 255 Karakter",
         ]);
 
         try {
