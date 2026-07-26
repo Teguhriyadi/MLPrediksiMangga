@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Exports\LaporanExport;
+use App\Models\Kecamatan;
 use App\Models\ProduksiMangga;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -72,7 +74,7 @@ class LaporanController extends Controller
     private function buildProduksiReport(array $filters): array
     {
         $rows = $this->baseFilteredQuery($filters)
-            ->with('varietasMangga')
+            ->with(['varietasMangga', 'kecamatanData'])
             ->orderByDesc('tahun')
             ->orderByRaw($this->quarterOrderSql('DESC'))
             ->get();
@@ -107,7 +109,7 @@ class LaporanController extends Controller
                 ['label' => 'Jumlah Data', 'value' => $rows->count()],
                 ['label' => 'Total Produksi (ton)', 'value' => number_format((float) $rows->sum('produksi'), 2, ',', '.')],
                 ['label' => 'Rata-rata Produksi (ton)', 'value' => number_format((float) $rows->avg('produksi'), 2, ',', '.')],
-                ['label' => 'Kecamatan Tercatat', 'value' => $rows->pluck('kecamatan')->filter()->unique()->count()],
+                ['label' => 'Kecamatan Tercatat', 'value' => $rows->pluck('kecamatan_id')->filter()->unique()->count()],
             ],
         ];
     }
@@ -115,27 +117,31 @@ class LaporanController extends Controller
     private function buildKecamatanReport(array $filters): array
     {
         $rows = $this->baseFilteredQuery($filters)
-            ->selectRaw('kecamatan')
-            ->selectRaw('COUNT(*) as jumlah_record')
-            ->selectRaw('SUM(produksi) as total_produksi')
-            ->selectRaw('AVG(produksi) as rata_produksi')
-            ->selectRaw('SUM(luas_panen) as total_luas_panen')
-            ->selectRaw('SUM(jumlah_pohon) as total_jumlah_pohon')
-            ->groupBy('kecamatan')
-            ->orderBy('kecamatan')
+            ->with('kecamatanData')
+            ->orderBy('tahun')
             ->get();
 
-        $mappedRows = $rows->map(function ($item, $index) {
-            $produktvitas = (float) $item->total_luas_panen > 0 ? ((float) $item->total_produksi / (float) $item->total_luas_panen) : 0;
+        $groupedRows = $rows
+            ->filter(fn ($item) => filled($item->kecamatan_id))
+            ->groupBy(fn ($item) => $item->kecamatan ?? '-')
+            ->sortKeys();
+
+        $mappedRows = $groupedRows->values()->map(function (Collection $items, $index) {
+            $kecamatan = $items->first()?->kecamatan ?? '-';
+            $totalProduksi = (float) $items->sum('produksi');
+            $totalLuasPanen = (float) $items->sum('luas_panen');
+            $totalJumlahPohon = (float) $items->sum('jumlah_pohon');
+            $rataProduksi = (float) $items->avg('produksi');
+            $produktvitas = $totalLuasPanen > 0 ? $totalProduksi / $totalLuasPanen : 0;
 
             return [
                 'No' => $index + 1,
-                'Kecamatan' => $item->kecamatan ?? '-',
-                'Jumlah Record' => (int) $item->jumlah_record,
-                'Total Produksi (ton)' => number_format((float) $item->total_produksi, 2, ',', '.'),
-                'Rata-rata Produksi (ton)' => number_format((float) $item->rata_produksi, 2, ',', '.'),
-                'Total Luas Panen (ha)' => number_format((float) $item->total_luas_panen, 2, ',', '.'),
-                'Jumlah Pohon' => number_format((float) $item->total_jumlah_pohon, 0, ',', '.'),
+                'Kecamatan' => $kecamatan,
+                'Jumlah Record' => $items->count(),
+                'Total Produksi (ton)' => number_format($totalProduksi, 2, ',', '.'),
+                'Rata-rata Produksi (ton)' => number_format($rataProduksi, 2, ',', '.'),
+                'Total Luas Panen (ha)' => number_format($totalLuasPanen, 2, ',', '.'),
+                'Jumlah Pohon' => number_format($totalJumlahPohon, 0, ',', '.'),
                 'Produktivitas (ton/ha)' => number_format($produktvitas, 2, ',', '.'),
             ];
         });
@@ -147,10 +153,10 @@ class LaporanController extends Controller
             'headers' => array_keys($mappedRows->first() ?? ['Data' => 'Tidak tersedia']),
             'rows' => $mappedRows,
             'summary' => [
-                ['label' => 'Jumlah Kecamatan', 'value' => $rows->count()],
-                ['label' => 'Total Produksi (ton)', 'value' => number_format((float) $rows->sum('total_produksi'), 2, ',', '.')],
-                ['label' => 'Rata-rata Produksi/Kecamatan', 'value' => number_format((float) $rows->avg('rata_produksi'), 2, ',', '.')],
-                ['label' => 'Total Luas Panen (ha)', 'value' => number_format((float) $rows->sum('total_luas_panen'), 2, ',', '.')],
+                ['label' => 'Jumlah Kecamatan', 'value' => $groupedRows->count()],
+                ['label' => 'Total Produksi (ton)', 'value' => number_format((float) $rows->sum('produksi'), 2, ',', '.')],
+                ['label' => 'Rata-rata Produksi/Kecamatan', 'value' => number_format((float) $groupedRows->avg(fn (Collection $items) => $items->avg('produksi')), 2, ',', '.')],
+                ['label' => 'Total Luas Panen (ha)', 'value' => number_format((float) $rows->sum('luas_panen'), 2, ',', '.')],
             ],
         ];
     }
@@ -201,12 +207,13 @@ class LaporanController extends Controller
     private function buildPrediksiReport(array $filters): array
     {
         $grouped = $this->baseFilteredQuery($filters)
-            ->orderBy('kecamatan')
+            ->with('kecamatanData')
             ->orderBy('tahun')
             ->orderByRaw($this->quarterOrderSql())
             ->get()
-            ->filter(fn ($item) => filled($item->kecamatan))
-            ->groupBy('kecamatan');
+            ->filter(fn ($item) => filled($item->kecamatan_id))
+            ->groupBy(fn ($item) => $item->kecamatan ?? '-')
+            ->sortKeys();
 
         $compiledRows = $grouped->map(function (Collection $items, string $kecamatan) {
             $prediction = $this->requestPrediction($items, 4, $kecamatan);
@@ -262,14 +269,23 @@ class LaporanController extends Controller
     {
         return ProduksiMangga::query()
             ->when($filters['tahun'], fn ($query, $tahun) => $query->where('tahun', $tahun))
-            ->when($filters['kecamatan'], fn ($query, $kecamatan) => $query->where('kecamatan', $kecamatan));
+            ->when($filters['kecamatan'], fn ($query, $kecamatan) => $query->where('kecamatan_id', $kecamatan));
     }
 
     private function extractFilters(Request $request): array
     {
+        $selectedKecamatan = $request->filled('kecamatan') ? (int) $request->input('kecamatan') : null;
+
+        if (Auth::user()?->role === \App\Models\User::ROLE_UPTD && Auth::user()?->kecamatan_id) {
+            $selectedKecamatan = (int) Auth::user()->kecamatan_id;
+        }
+
         return [
             'tahun' => $request->filled('tahun') ? (int) $request->input('tahun') : null,
-            'kecamatan' => $request->filled('kecamatan') ? (string) $request->input('kecamatan') : null,
+            'kecamatan' => $selectedKecamatan,
+            'kecamatan_label' => $selectedKecamatan
+                ? Kecamatan::query()->whereKey($selectedKecamatan)->value('nama')
+                : null,
         ];
     }
 
@@ -291,15 +307,16 @@ class LaporanController extends Controller
         ];
     }
 
-    private function getDaftarKecamatan(): array
+    private function getDaftarKecamatan()
     {
-        return ProduksiMangga::query()
-            ->pluck('kecamatan')
-            ->filter()
-            ->unique()
-            ->sort()
-            ->values()
-            ->all();
+        return Kecamatan::query()
+            ->where('is_active', true)
+            ->when(
+                Auth::user()?->role === \App\Models\User::ROLE_UPTD && Auth::user()?->kecamatan_id,
+                fn ($query) => $query->whereKey(Auth::user()->kecamatan_id)
+            )
+            ->orderBy('nama')
+            ->get(['id', 'nama']);
     }
 
     private function getDaftarTahun(): array

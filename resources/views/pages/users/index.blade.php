@@ -50,7 +50,8 @@
                                 <td>{{ $item['username'] }}</td>
                                 <td>{{ $item['nama'] }}</td>
                                 <td>
-                                    <span class="badge badge-info">{{ $roles[$item['role']] ?? ucfirst($item['role']) }}</span>
+                                    <span
+                                        class="badge badge-info">{{ $roles[$item['role']] ?? ucfirst($item['role']) }}</span>
                                 </td>
                                 <td>{{ $item['kecamatan'] ?? '-' }}</td>
                                 <td>{{ $item['email'] }}</td>
@@ -61,10 +62,12 @@
                                         data-target="#exampleModalEdit" onclick="editData(`{{ $item['id'] }}`)">
                                         <i class="fa fa-edit"></i> Edit
                                     </button>
-                                    <form action="{{ url('/pages/users/' . $item['id']) }}" method="POST" style="display: inline">
+                                    <form action="{{ url('/pages/users/' . $item['id']) }}" method="POST"
+                                        style="display: inline">
                                         @csrf
-                                        @method("DELETE")
-                                        <button onclick="return confirm('Apakah Anda Yakin ? Ingin Menghapus Data Ini?')" type="submit" class="btn btn-danger btn-sm">
+                                        @method('DELETE')
+                                        <button onclick="return confirm('Apakah Anda Yakin ? Ingin Menghapus Data Ini?')"
+                                            type="submit" class="btn btn-danger btn-sm">
                                             <i class="fa fa-trash"></i> Hapus
                                         </button>
                                     </form>
@@ -93,46 +96,97 @@
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="nama" class="form-label"> Nama </label>
-                            <input type="text" class="form-control" name="nama" id="nama"
-                                placeholder="Masukkan Nama">
+                            <label for="nama" class="form-label">
+                                Nama
+                                <small class="text-danger">*</small>
+                            </label>
+                            <input type="text" class="form-control @error('nama') is-invalid @enderror" name="nama"
+                                id="nama" placeholder="Masukkan Nama" value="{{ old('nama') }}">
+
+                            @error('nama')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="email" class="form-label"> Email </label>
-                            <input type="email" class="form-control" name="email" id="email"
-                                placeholder="Masukkan Email">
+                            <label for="email" class="form-label">
+                                Email
+                                <small class="text-danger">*</small>
+                            </label>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
+                                id="email" placeholder="Masukkan Email" value="{{ old('email') }}">
+
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="username" class="form-label"> Username </label>
-                            <input type="text" class="form-control" name="username" id="username"
-                                placeholder="Masukkan Username">
+                            <label for="username" class="form-label">
+                                Username
+                                <small class="text-danger">*</small>
+                            </label>
+                            <input type="text" class="form-control @error('username') is-invalid @enderror"
+                                name="username" id="username" placeholder="Masukkan Username"
+                                value="{{ old('username') }}">
+
+                            @error('username')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="role" class="form-label"> Role </label>
-                            <select name="role" id="role" class="form-control">
+                            <label for="role" class="form-label">
+                                Role
+                                <small class="text-danger">*</small>
+                            </label>
+                            <select name="role" id="role" class="form-control @error('role') is-invalid @enderror">
                                 <option value="">Pilih Role</option>
                                 @foreach ($roles as $roleValue => $roleLabel)
-                                    <option value="{{ $roleValue }}">{{ $roleLabel }}</option>
+                                    <option value="{{ $roleValue }}">
+                                        {{ $roleLabel }}
+                                    </option>
                                 @endforeach
                             </select>
+
+                            @error('role')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="kecamatan" class="form-label"> Kecamatan (untuk Role UPTD) </label>
-                            <select name="kecamatan" id="kecamatan" class="form-control">
+                            <label for="kecamatan_id" class="form-label"> Kecamatan (untuk Role UPTD) </label>
+                            <select name="kecamatan_id" id="kecamatan_id"
+                                class="form-control @error('kecamatan_id') is-invalid @enderror">
                                 <option value="">Pilih Kecamatan</option>
                                 @foreach ($kecamatans as $kecamatan)
-                                    <option value="{{ $kecamatan }}">{{ $kecamatan }}</option>
+                                    <option value="{{ $kecamatan->id }}">
+                                        {{ $kecamatan->nama }}
+                                    </option>
                                 @endforeach
                             </select>
+
+                            @error('kecamatan_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="nomor_hp" class="form-label"> Nomor HP </label>
-                            <input type="text" class="form-control" name="nomor_hp" id="nomor_hp"
-                                placeholder="Masukkan Nomor HP">
+                            <label for="nomor_hp" class="form-label">
+                                Nomor HP
+                                <small class="text-danger">*</small>
+                            </label>
+                            <input type="text" class="form-control @error('nomor_hp') is-invalid @enderror"
+                                name="nomor_hp" id="nomor_hp" placeholder="Masukkan Nomor HP"
+                                value="{{ old('nomor_hp') }}">
+
+                            @error('nomor_hp')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="alamat" class="form-label"> Alamat </label>
-                            <textarea name="alamat" class="form-control" id="alamat" rows="5" placeholder="Masukkan Alamat"></textarea>
+                            <label for="alamat" class="form-label">Alamat</label>
+                            <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" id="alamat" rows="5"
+                                placeholder="Masukkan Alamat">{{ old('alamat') }}</textarea>
+
+                            @error('alamat')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 

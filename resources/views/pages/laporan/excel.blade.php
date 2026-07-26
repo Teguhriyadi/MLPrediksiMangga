@@ -12,7 +12,7 @@
     <tr>
         <td colspan="{{ count($hasilLaporan['headers']) }}">
             Tahun: {{ $hasilLaporan['filters']['tahun'] ?? 'Semua' }} |
-            Kecamatan: {{ $hasilLaporan['filters']['kecamatan'] ?? 'Semua' }} |
+            Kecamatan: {{ $hasilLaporan['filters']['kecamatan_label'] ?? 'Semua' }} |
             Tanggal Cetak: {{ now()->format('d-m-Y H:i') }}
         </td>
     </tr>

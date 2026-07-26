@@ -13,18 +13,21 @@ class AppController extends Controller
     public function dashboard(Request $request)
     {
         $selectedKecamatan = $request->input('kecamatan');
+        $opsiKecamatan = Kecamatan::where('is_active', true)->orderBy('nama')->get(['id', 'nama']);
 
         // Jika user adalah UPTD, gunakan kecamatan dari user dan tidak bisa diubah
-        if (Auth::user()->role === \App\Models\User::ROLE_UPTD && Auth::user()->kecamatan) {
-            $selectedKecamatan = Auth::user()->kecamatan;
+        if (Auth::user()->role === \App\Models\User::ROLE_UPTD && Auth::user()->kecamatan_id) {
+            $selectedKecamatan = (string) Auth::user()->kecamatan_id;
         }
 
-        // Ambil opsi kecamatan dari tabel kecamatans yang aktif
-        $data["opsiKecamatan"] = Kecamatan::where('is_active', true)->orderBy('nama')->pluck('nama')->toArray();
-
+        $selectedKecamatanId = filled($selectedKecamatan) ? (int) $selectedKecamatan : null;
         $data["selectedKecamatan"] = $selectedKecamatan;
+        $data["selectedKecamatanLabel"] = $selectedKecamatanId
+            ? optional($opsiKecamatan->firstWhere('id', $selectedKecamatanId) ?? Kecamatan::find($selectedKecamatanId))->nama
+            : null;
+        $data["opsiKecamatan"] = $opsiKecamatan;
         $rawProduksi = ProduksiMangga::query()
-            ->when($selectedKecamatan, fn ($query, $kecamatan) => $query->where('kecamatan', $kecamatan))
+            ->when($selectedKecamatanId, fn ($query, $kecamatanId) => $query->where('kecamatan_id', $kecamatanId))
             ->orderBy('tahun', 'ASC')
             ->orderByRaw($this->quarterOrderSql())
             ->get(['tahun', 'triwulan', 'produksi']);
@@ -60,18 +63,21 @@ class AppController extends Controller
     public function prediksi(Request $request)
     {
         $selectedKecamatan = $request->input('kecamatan');
+        $opsiKecamatan = Kecamatan::where('is_active', true)->orderBy('nama')->get(['id', 'nama']);
 
         // Jika user adalah UPTD, gunakan kecamatan dari user dan tidak bisa diubah
-        if (Auth::user()->role === \App\Models\User::ROLE_UPTD && Auth::user()->kecamatan) {
-            $selectedKecamatan = Auth::user()->kecamatan;
+        if (Auth::user()->role === \App\Models\User::ROLE_UPTD && Auth::user()->kecamatan_id) {
+            $selectedKecamatan = (string) Auth::user()->kecamatan_id;
         }
 
-        // Ambil opsi kecamatan dari tabel kecamatans yang aktif
-        $data["opsiKecamatan"] = Kecamatan::where('is_active', true)->orderBy('nama')->pluck('nama')->toArray();
-
+        $selectedKecamatanId = filled($selectedKecamatan) ? (int) $selectedKecamatan : null;
         $data["selectedKecamatan"] = $selectedKecamatan;
+        $data["selectedKecamatanLabel"] = $selectedKecamatanId
+            ? optional($opsiKecamatan->firstWhere('id', $selectedKecamatanId) ?? Kecamatan::find($selectedKecamatanId))->nama
+            : null;
+        $data["opsiKecamatan"] = $opsiKecamatan;
         $rawProduksi = ProduksiMangga::query()
-            ->when($selectedKecamatan, fn ($query, $kecamatan) => $query->where('kecamatan', $kecamatan))
+            ->when($selectedKecamatanId, fn ($query, $kecamatanId) => $query->where('kecamatan_id', $kecamatanId))
             ->orderBy('tahun', 'ASC')
             ->orderByRaw($this->quarterOrderSql())
             ->get();

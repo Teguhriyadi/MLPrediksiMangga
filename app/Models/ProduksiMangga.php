@@ -20,8 +20,18 @@ class ProduksiMangga extends Model
 
     public $primaryKey = "id";
 
+    public function kecamatanData(): BelongsTo
+    {
+        return $this->belongsTo(Kecamatan::class, 'kecamatan_id');
+    }
+
     public function varietasMangga(): BelongsTo
     {
         return $this->belongsTo(VarietasMangga::class, 'varietas_mangga_id');
+    }
+
+    public function getKecamatanAttribute(): ?string
+    {
+        return $this->kecamatanData?->nama;
     }
 }

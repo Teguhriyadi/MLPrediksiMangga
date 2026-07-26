@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Kecamatan;
 use App\Models\ProduksiMangga;
 use App\Models\VarietasMangga;
 use Illuminate\Database\Seeder;
@@ -15,6 +16,8 @@ class ProduksiManggaSeeder extends Seeder
     {
         $varietasMap = VarietasMangga::query()
             ->pluck('id', 'nama_varietas');
+        $kecamatanMap = Kecamatan::query()
+            ->pluck('id', 'nama');
 
         $kecamatanProfiles = [
             ['kecamatan' => 'Haurgeulis', 'varietas' => 'Gedong Gincu', 'base_produksi' => 20.4, 'base_luas_tanam' => 74, 'base_pohon' => 275619],
@@ -52,6 +55,11 @@ class ProduksiManggaSeeder extends Seeder
 
         foreach ($kecamatanProfiles as $indexKecamatan => $profile) {
             $varietasId = $varietasMap[$profile['varietas']] ?? $varietasMap->first();
+            $kecamatanId = $kecamatanMap[$profile['kecamatan']] ?? null;
+
+            if (! $kecamatanId) {
+                continue;
+            }
 
             for ($tahun = 2021; $tahun <= 2026; $tahun++) {
                 foreach (['Q1', 'Q2', 'Q3', 'Q4'] as $indexTriwulan) {
@@ -71,7 +79,7 @@ class ProduksiManggaSeeder extends Seeder
 
                     ProduksiMangga::query()->updateOrCreate(
                         [
-                            'kecamatan' => $profile['kecamatan'],
+                            'kecamatan_id' => $kecamatanId,
                             'tahun' => $tahun,
                             'triwulan' => $indexTriwulan,
                         ],

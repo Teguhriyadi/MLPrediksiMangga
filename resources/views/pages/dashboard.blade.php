@@ -375,20 +375,25 @@
                         <div class="form-row align-items-end">
                             <div class="form-group col-md-8 mb-2">
                                 <label for="kecamatan" class="font-weight-semibold">Pilih Kecamatan</label>
-                                <select name="kecamatan" id="kecamatan" class="form-control dashboard-select">
+                                <select name="kecamatan" id="kecamatan" class="form-control dashboard-select" {{ Auth::user()->role === \App\Models\User::ROLE_UPTD ? 'disabled' : '' }}>
                                     <option value="">Semua Kecamatan</option>
                                     @foreach ($opsiKecamatan as $kecamatan)
-                                        <option value="{{ $kecamatan }}" {{ $selectedKecamatan === $kecamatan ? 'selected' : '' }}>
-                                            {{ $kecamatan }}
+                                        <option value="{{ $kecamatan->id }}" {{ (string) $selectedKecamatan === (string) $kecamatan->id ? 'selected' : '' }}>
+                                            {{ $kecamatan->nama }}
                                         </option>
                                     @endforeach
                                 </select>
+                                @if (Auth::user()->role === \App\Models\User::ROLE_UPTD)
+                                    <input type="hidden" name="kecamatan" value="{{ $selectedKecamatan }}">
+                                @endif
                             </div>
-                            <div class="form-group col-md-4 mb-2">
-                                <button type="submit" class="btn btn-primary btn-block dashboard-btn">
-                                    <i class="fas fa-filter mr-1"></i> Terapkan
-                                </button>
-                            </div>
+                            @if (Auth::user()->role !== \App\Models\User::ROLE_UPTD)
+                                <div class="form-group col-md-4 mb-2">
+                                    <button type="submit" class="btn btn-primary btn-block dashboard-btn">
+                                        <i class="fas fa-filter mr-1"></i> Terapkan
+                                    </button>
+                                </div>
+                            @endif
                         </div>
                     </form>
                 </div>
@@ -397,7 +402,7 @@
             <div class="dashboard-filter-meta">
                 <div class="meta-item">
                     <span class="meta-label">Kecamatan Aktif</span>
-                    <span class="meta-value">{{ $selectedKecamatan ?: 'Seluruh Wilayah' }}</span>
+                    <span class="meta-value">{{ $selectedKecamatanLabel ?: 'Seluruh Wilayah' }}</span>
                 </div>
                 <div class="meta-item">
                     <span class="meta-label">Rentang Tahun</span>
@@ -418,6 +423,7 @@
                 $result = session('result') ?? [];
                 $predictionSummary = session('prediction_summary') ?? [];
                 $prediksi = array_values($result)[0] ?? 0;
+                $labelKecamatanAktif = $selectedKecamatanLabel ?: 'seluruh kecamatan';
 
                 $growth = $lastActual > 0 ? (($prediksi - $lastActual) / $lastActual) * 100 : 0;
             @endphp
@@ -426,7 +432,7 @@
                 <div>
                     <h5 class="dashboard-analysis-title">Analisis Prediksi Produksi Mangga</h5>
                     <p class="dashboard-analysis-subtitle">
-                        Jalankan prediksi berdasarkan histori produksi <b>{{ $selectedKecamatan ?: 'seluruh kecamatan' }}</b>
+                        Jalankan prediksi berdasarkan histori produksi <b>{{ $labelKecamatanAktif }}</b>
                         untuk memproyeksikan {{ $sarimaConfig['horizon_prediksi'] }} triwulan berikutnya.
                     </p>
                 </div>
@@ -436,7 +442,7 @@
                     <input type="hidden" name="kecamatan" value="{{ $selectedKecamatan }}">
                     <button class="btn btn-success dashboard-predict-btn">
                         <i class="fas fa-play-circle mr-1"></i>
-                        Prediksi {{ $selectedKecamatan ?: 'Semua Data' }}
+                        Prediksi {{ $selectedKecamatanLabel ?: 'Semua Data' }}
                     </button>
                 </form>
             </div>
@@ -453,7 +459,7 @@
 
                     <p>
                         Berdasarkan hasil perhitungan metode SARIMA yang hanya memanfaatkan seri produksi per triwulan,
-                        untuk wilayah <b>{{ $selectedKecamatan ?: 'gabungan seluruh data' }}</b>,
+                        untuk wilayah <b>{{ $selectedKecamatanLabel ?: 'gabungan seluruh data' }}</b>,
                         produksi mangga diprediksi sebesar
                         <b>{{ $prediksi }} ton</b>.
                     </p>
@@ -478,7 +484,7 @@
 
             {{-- 🔥 CHART --}}
             <div class="mb-3 text-muted">
-                Grafik menampilkan seri input SARIMA berupa histori produksi triwulanan untuk <b>{{ $selectedKecamatan ?: 'seluruh kecamatan' }}</b>.
+                Grafik menampilkan seri input SARIMA berupa histori produksi triwulanan untuk <b>{{ $selectedKecamatanLabel ?: 'seluruh kecamatan' }}</b>.
                 @if ($isAgregatKabupaten)
                     Saat semua kecamatan dipilih, data ditampilkan sebagai akumulasi kabupaten per triwulan agar grafik tetap valid.
                 @else

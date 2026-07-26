@@ -33,12 +33,12 @@
 
                         <div class="form-row">
                             <div class="form-group col-md-6">
-                                <label for="kecamatan">Kecamatan</label>
-                                <select name="kecamatan" id="kecamatan" class="form-control" required>
+                                <label for="kecamatan_id">Kecamatan</label>
+                                <select name="kecamatan_id" id="kecamatan_id" class="form-control" required>
                                     <option value="">-- Pilih Kecamatan --</option>
                                     @foreach ($daftarKecamatan as $kecamatan)
-                                        <option value="{{ $kecamatan }}" {{ old('kecamatan') === $kecamatan ? 'selected' : '' }}>
-                                            {{ $kecamatan }}
+                                        <option value="{{ $kecamatan->id }}" {{ (string) old('kecamatan_id') === (string) $kecamatan->id ? 'selected' : '' }}>
+                                            {{ $kecamatan->nama }}
                                         </option>
                                     @endforeach
                                 </select>

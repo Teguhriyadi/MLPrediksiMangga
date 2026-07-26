@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\VarietasMangga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class VarietasManggaController extends Controller
 {
@@ -23,8 +24,14 @@ class VarietasManggaController extends Controller
         $validated = $request->validate([
             'kode_varietas' => ['required', 'string', 'max:50', 'unique:varietas_mangga,kode_varietas'],
             'nama_varietas' => ['required', 'string', 'max:100'],
-            'asal_varietas' => ['nullable', 'string', 'max:150'],
+            'asal_varietas' => ['required', 'string', 'max:150'],
             'deskripsi' => ['nullable', 'string', 'max:500'],
+        ], [
+            'kode_varietas.required' => 'Kode varietas wajib diisi.',
+            'kode_varietas.unique' => 'Kode varietas sudah digunakan.',
+            'nama_varietas.required' => 'Nama varietas wajib diisi.',
+            'asal_varietas.required' => 'Asal varietas wajib diisi.',
+            'deskripsi.max' => 'Deskripsi varietas maksimal 500 karakter.',
         ]);
 
         try {
@@ -52,10 +59,21 @@ class VarietasManggaController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
-            'kode_varietas' => ['required', 'string', 'max:50', 'unique:varietas_mangga,kode_varietas,' . $id],
+            'kode_varietas' => [
+                'required', 
+                'string', 
+                'max:50', 
+                Rule::unique('varietas_mangga', 'kode_varietas')->ignore($id),
+            ],
             'nama_varietas' => ['required', 'string', 'max:100'],
             'asal_varietas' => ['nullable', 'string', 'max:150'],
             'deskripsi' => ['nullable', 'string', 'max:500'],
+        ], [
+            'kode_varietas.required' => 'Kode varietas wajib diisi.',
+            'kode_varietas.unique' => 'Kode varietas sudah digunakan.',
+            'nama_varietas.required' => 'Nama varietas wajib diisi.',
+            'asal_varietas.required' => 'Asal varietas wajib diisi.',
+            'deskripsi.max' => 'Deskripsi varietas maksimal 500 karakter.',
         ]);
 
         try {

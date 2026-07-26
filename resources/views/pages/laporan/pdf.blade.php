@@ -71,7 +71,7 @@
 
     <div class="meta">
         <strong>Tahun:</strong> {{ $hasilLaporan['filters']['tahun'] ?? 'Semua' }} |
-        <strong>Kecamatan:</strong> {{ $hasilLaporan['filters']['kecamatan'] ?? 'Semua' }} |
+        <strong>Kecamatan:</strong> {{ $hasilLaporan['filters']['kecamatan_label'] ?? 'Semua' }} |
         <strong>Tanggal Cetak:</strong> {{ now()->format('d-m-Y H:i') }}
     </div>
 

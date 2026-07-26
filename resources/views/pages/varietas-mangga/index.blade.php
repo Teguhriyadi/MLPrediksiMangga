@@ -97,24 +97,49 @@
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="kode_varietas">Kode Varietas</label>
-                            <input type="text" class="form-control" name="kode_varietas" id="kode_varietas"
+                            <label for="kode_varietas">
+                                Kode Varietas
+                                <small class="text-danger">*</small>
+                            </label>
+                            <input type="text" class="form-control @error('kode_varietas') is-invalid @enderror" name="kode_varietas" id="kode_varietas"
                                 placeholder="Masukkan kode varietas" value="{{ old('kode_varietas') }}">
+
+                            @error('kode_varietas')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="nama_varietas">Nama Varietas</label>
-                            <input type="text" class="form-control" name="nama_varietas" id="nama_varietas"
+                            <label for="nama_varietas">
+                                Nama Varietas
+                                <small class="text-danger">*</small>
+                            </label>
+                            <input type="text" class="form-control @error('nama_varietas') is-invalid @enderror" name="nama_varietas" id="nama_varietas"
                                 placeholder="Masukkan nama varietas" value="{{ old('nama_varietas') }}">
+
+                            @error('nama_varietas')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group">
-                            <label for="asal_varietas">Asal Varietas</label>
-                            <input type="text" class="form-control" name="asal_varietas" id="asal_varietas"
+                            <label for="asal_varietas">
+                                Asal Varietas
+                                <small class="text-danger">*</small>
+                            </label>
+                            <input type="text" class="form-control @error('asal_varietas') is-invalid @enderror" name="asal_varietas" id="asal_varietas"
                                 placeholder="Masukkan asal varietas" value="{{ old('asal_varietas') }}">
+
+                            @error('asal_varietas')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group">
                             <label for="deskripsi">Deskripsi</label>
-                            <textarea name="deskripsi" id="deskripsi" class="form-control" rows="4"
+                            <textarea name="deskripsi" id="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" rows="4"
                                 placeholder="Masukkan deskripsi varietas">{{ old('deskripsi') }}</textarea>
+
+                            @error('deskripsi')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer">

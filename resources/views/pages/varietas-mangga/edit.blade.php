@@ -3,24 +3,49 @@
     @method('PUT')
     <div class="modal-body">
         <div class="form-group">
-            <label for="kode_varietas_edit">Kode Varietas</label>
-            <input type="text" class="form-control" name="kode_varietas" id="kode_varietas_edit"
+            <label for="kode_varietas_edit">
+                Kode Varietas
+                <small class="text-danger">*</small>
+            </label>
+            <input type="text" class="form-control @error('kode_varietas') is-invalid @enderror" name="kode_varietas" id="kode_varietas_edit"
                 placeholder="Masukkan kode varietas" value="{{ old('kode_varietas', $edit->kode_varietas) }}">
+
+            @error('kode_varietas')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
         <div class="form-group">
-            <label for="nama_varietas_edit">Nama Varietas</label>
-            <input type="text" class="form-control" name="nama_varietas" id="nama_varietas_edit"
+            <label for="nama_varietas_edit">
+                Nama Varietas
+                <small class="text-danger">*</small>
+            </label>
+            <input type="text" class="form-control @error('nama_varietas') is-invalid @enderror" name="nama_varietas" id="nama_varietas_edit"
                 placeholder="Masukkan nama varietas" value="{{ old('nama_varietas', $edit->nama_varietas) }}">
+
+            @error('nama_varietas')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
         <div class="form-group">
-            <label for="asal_varietas_edit">Asal Varietas</label>
-            <input type="text" class="form-control" name="asal_varietas" id="asal_varietas_edit"
+            <label for="asal_varietas_edit">
+                Asal Varietas
+                <small class="text-danger">*</small>
+            </label>
+            <input type="text" class="form-control @error('asal_varietas') is-invalid @enderror" name="asal_varietas" id="asal_varietas_edit"
                 placeholder="Masukkan asal varietas" value="{{ old('asal_varietas', $edit->asal_varietas) }}">
+
+            @error('asal_varietas')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
         <div class="form-group">
-            <label for="deskripsi_edit">Deskripsi</label>
-            <textarea name="deskripsi" id="deskripsi_edit" class="form-control" rows="4"
+            <label for="deskripsi_edit"> Deskripsi</label>
+            <textarea name="deskripsi" id="deskripsi_edit" class="form-control @error('deskripsi') is-invalid @enderror" rows="4"
                 placeholder="Masukkan deskripsi varietas">{{ old('deskripsi', $edit->deskripsi) }}</textarea>
+
+            @error('deskripsi')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
     </div>
 

@@ -49,8 +49,8 @@
                         <select name="kecamatan" id="kecamatan" class="form-control">
                             <option value="">Semua Kecamatan</option>
                             @foreach ($opsiKecamatan as $kecamatan)
-                                <option value="{{ $kecamatan }}" {{ $filters['kecamatan'] === $kecamatan ? 'selected' : '' }}>
-                                    {{ $kecamatan }}
+                                <option value="{{ $kecamatan->id }}" {{ (string) $filters['kecamatan'] === (string) $kecamatan->id ? 'selected' : '' }}>
+                                    {{ $kecamatan->nama }}
                                 </option>
                             @endforeach
                         </select>
@@ -70,7 +70,7 @@
                 <strong>Filter Aktif:</strong>
                 <span class="badge badge-light">Jenis: {{ $opsiJenis[$jenisLaporan] ?? '-' }}</span>
                 <span class="badge badge-light">Tahun: {{ $filters['tahun'] ?? 'Semua' }}</span>
-                <span class="badge badge-light">Kecamatan: {{ $filters['kecamatan'] ?? 'Semua' }}</span>
+                <span class="badge badge-light">Kecamatan: {{ $filters['kecamatan_label'] ?? 'Semua' }}</span>
                 <span class="badge badge-primary">{{ $paginatedRows->total() }} baris</span>
             </div>
         </div>

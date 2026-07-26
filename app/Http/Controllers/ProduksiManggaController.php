@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kecamatan;
 use App\Models\ProduksiMangga;
 use App\Models\VarietasMangga;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class ProduksiManggaController extends Controller
     {
         try {
             $produksi = ProduksiMangga::query()
-                ->with('varietasMangga')
+                ->with(['varietasMangga', 'kecamatanData'])
                 ->orderByDesc("tahun")
                 ->orderByRaw($this->quarterOrderSql("DESC"))
                 ->get();
@@ -41,7 +42,7 @@ class ProduksiManggaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            "kecamatan" => ["required", "string", "max:150"],
+            "kecamatan_id" => ["required", "exists:kecamatans,id"],
             "tahun" => ["required", "integer", "min:2018", "max:2100"],
             "triwulan" => ["required", "in:Q1,Q2,Q3,Q4"],
             "varietas_mangga_id" => ["required", "exists:varietas_mangga,id"],
@@ -56,7 +57,7 @@ class ProduksiManggaController extends Controller
         ]);
 
         $isDuplicate = ProduksiMangga::query()
-            ->where("kecamatan", $validated["kecamatan"])
+            ->where("kecamatan_id", $validated["kecamatan_id"])
             ->where("tahun", $validated["tahun"])
             ->where("triwulan", $validated["triwulan"])
             ->exists();
@@ -88,12 +89,12 @@ class ProduksiManggaController extends Controller
     public function show(string $id)
     {
         $detail = ProduksiMangga::query()
-            ->with('varietasMangga')
+            ->with(['varietasMangga', 'kecamatanData'])
             ->findOrFail($id);
 
         $historiKecamatan = ProduksiMangga::query()
-            ->with('varietasMangga')
-            ->where("kecamatan", $detail->kecamatan)
+            ->with(['varietasMangga', 'kecamatanData'])
+            ->where("kecamatan_id", $detail->kecamatan_id)
             ->orderBy("tahun")
             ->orderByRaw($this->quarterOrderSql())
             ->get();
@@ -110,7 +111,8 @@ class ProduksiManggaController extends Controller
 
     public function edit(string $id)
     {
-        $data["edit"] = ProduksiMangga::query()->where("id", $id)->firstOrFail();
+        $data["edit"] = ProduksiMangga::query()->with('kecamatanData')->where("id", $id)->firstOrFail();
+        $data["daftarKecamatan"] = $this->getDaftarKecamatan();
         $data["daftarTriwulan"] = $this->getDaftarTriwulan();
         $data["daftarVarietas"] = $this->getDaftarVarietas();
 
@@ -120,6 +122,7 @@ class ProduksiManggaController extends Controller
     public function update(Request $request, string $id)
     {
         $validated = $request->validate([
+            "kecamatan_id" => ["required", "exists:kecamatans,id"],
             "tahun" => ["required", "integer", "min:2018", "max:2100"],
             "triwulan" => ["required", "in:Q1,Q2,Q3,Q4"],
             "varietas_mangga_id" => ["required", "exists:varietas_mangga,id"],
@@ -132,6 +135,19 @@ class ProduksiManggaController extends Controller
         ], [
             "luas_panen.lte" => "Luas panen tidak boleh melebihi luas tanam.",
         ]);
+
+        $isDuplicate = ProduksiMangga::query()
+            ->where("kecamatan_id", $validated["kecamatan_id"])
+            ->where("tahun", $validated["tahun"])
+            ->where("triwulan", $validated["triwulan"])
+            ->where("id", "!=", $id)
+            ->exists();
+
+        if ($isDuplicate) {
+            return back()
+                ->withInput()
+                ->with("error", "Data untuk kecamatan, tahun, dan triwulan tersebut sudah tersedia.");
+        }
 
         try {
             DB::beginTransaction();
@@ -229,55 +245,16 @@ class ProduksiManggaController extends Controller
             "total_data" => $produksi->count(),
             "total_produksi" => round((float) $produksi->sum("produksi"), 2),
             "rata_produksi" => round((float) $produksi->avg("produksi"), 2),
-            "kecamatan_aktif" => $produksi->filter(fn ($item) => filled($item->kecamatan))->unique("kecamatan")->count(),
+            "kecamatan_aktif" => $produksi->filter(fn ($item) => filled($item->kecamatan_id))->unique("kecamatan_id")->count(),
         ];
     }
 
-    private function getDaftarKecamatan(): array
+    private function getDaftarKecamatan()
     {
-        $default = [
-            "Haurgeulis",
-            "Gantar",
-            "Kroya",
-            "Gabuswetan",
-            "Cikedung",
-            "Terisi",
-            "Lelea",
-            "Bangodua",
-            "Tukdana",
-            "Widasari",
-            "Kertasemaya",
-            "Sukagumiwang",
-            "Krangkeng",
-            "Karangampel",
-            "Kedokan Bunder",
-            "Juntinyuat",
-            "Sliyeg",
-            "Jatibarang",
-            "Balongan",
-            "Indramayu",
-            "Sindang",
-            "Cantigi",
-            "Pasekan",
-            "Lohbener",
-            "Arahan",
-            "Losarang",
-            "Kandanghaur",
-            "Bongas",
-            "Anjatan",
-            "Sukra",
-            "Patrol",
-        ];
-
-        $existing = ProduksiMangga::query()
-            ->pluck("kecamatan")
-            ->filter()
-            ->toArray();
-
-        $kecamatan = array_unique(array_merge($default, $existing));
-        sort($kecamatan);
-
-        return $kecamatan;
+        return Kecamatan::query()
+            ->where('is_active', true)
+            ->orderBy('nama')
+            ->get(['id', 'nama']);
     }
 
     private function getDaftarTriwulan(): array

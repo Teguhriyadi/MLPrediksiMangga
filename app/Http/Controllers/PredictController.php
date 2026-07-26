@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kecamatan;
 use App\Models\ProduksiMangga;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class PredictController extends Controller
@@ -12,8 +14,17 @@ class PredictController extends Controller
     {
         $selectedKecamatan = $request->input('kecamatan');
 
+        if (Auth::user()?->role === \App\Models\User::ROLE_UPTD && Auth::user()?->kecamatan_id) {
+            $selectedKecamatan = (string) Auth::user()->kecamatan_id;
+        }
+
+        $selectedKecamatanId = filled($selectedKecamatan) ? (int) $selectedKecamatan : null;
+        $selectedKecamatanLabel = $selectedKecamatanId
+            ? Kecamatan::query()->whereKey($selectedKecamatanId)->value('nama')
+            : null;
+
         $rawData = ProduksiMangga::query()
-            ->when($selectedKecamatan, fn ($query, $kecamatan) => $query->where('kecamatan', $kecamatan))
+            ->when($selectedKecamatanId, fn ($query, $kecamatanId) => $query->where('kecamatan_id', $kecamatanId))
             ->orderBy('tahun', 'ASC')
             ->orderByRaw($this->quarterOrderSql())
             ->get(['tahun', 'triwulan', 'produksi']);
@@ -42,7 +53,7 @@ class PredictController extends Controller
             $response = Http::timeout(20)->post(rtrim((string) config('app.env_python'), '/') . "/predict", [
                 'data' => $data,
                 'steps' => 4,
-                'kecamatan' => $selectedKecamatan,
+                'kecamatan' => $selectedKecamatanLabel,
             ]);
 
             if (! $response->successful()) {

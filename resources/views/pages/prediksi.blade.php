@@ -294,7 +294,7 @@
                         <i class="fas fa-map-marked-alt"></i>
                     </div>
                     <div class="dashboard-stat-label">Mode Analisis</div>
-                    <div class="dashboard-stat-value">{{ $selectedKecamatan ?: 'Semua Kecamatan' }}</div>
+                    <div class="dashboard-stat-value">{{ $selectedKecamatanLabel ?: 'Semua Kecamatan' }}</div>
                     <p class="dashboard-stat-caption">
                         {{ $isAgregatKabupaten ? 'Menampilkan akumulasi kabupaten per triwulan.' : 'Menampilkan seri khusus kecamatan terpilih.' }}
                     </p>
@@ -320,8 +320,8 @@
                                 <select name="kecamatan" id="kecamatan" class="form-control dashboard-select" {{ Auth::user()->role === \App\Models\User::ROLE_UPTD ? 'disabled' : '' }}>
                                     <option value="">Semua Kecamatan</option>
                                     @foreach ($opsiKecamatan as $kecamatan)
-                                        <option value="{{ $kecamatan }}" {{ $selectedKecamatan === $kecamatan ? 'selected' : '' }}>
-                                            {{ $kecamatan }}
+                                        <option value="{{ $kecamatan->id }}" {{ (string) $selectedKecamatan === (string) $kecamatan->id ? 'selected' : '' }}>
+                                            {{ $kecamatan->nama }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -344,7 +344,7 @@
             <div class="dashboard-filter-meta">
                 <div class="meta-item">
                     <span class="meta-label">Kecamatan Aktif</span>
-                    <span class="meta-value">{{ $selectedKecamatan ?: 'Seluruh Wilayah' }}</span>
+                    <span class="meta-value">{{ $selectedKecamatanLabel ?: 'Seluruh Wilayah' }}</span>
                 </div>
                 <div class="meta-item">
                     <span class="meta-label">Mode Grafik</span>
@@ -370,7 +370,7 @@
                 <div>
                     <h5 class="dashboard-analysis-title">Analisis Prediksi Produksi Mangga</h5>
                     <p class="dashboard-analysis-subtitle">
-                        Jalankan prediksi berdasarkan histori <b>{{ $selectedKecamatan ?: 'seluruh kecamatan' }}</b>.
+                        Jalankan prediksi berdasarkan histori <b>{{ $selectedKecamatanLabel ?: 'seluruh kecamatan' }}</b>.
                     </p>
                 </div>
 
@@ -429,7 +429,10 @@
 
             {{-- 🔥 CHART --}}
             <div class="mb-3 text-muted">
-                Grafik menampilkan histori produksi dan prediksi untuk <b>{{ $selectedKecamatan ?: 'seluruh kecamatan' }}</b>.
+                Grafik menampilkan histori produksi dan prediksi untuk <b>{{ $selectedKecamatanLabel ?: 'seluruh kecamatan' }}</b>.
+                @php
+                    $labelKecamatanAktif = $selectedKecamatanLabel ?: 'seluruh kecamatan';
+                @endphp
             </div>
 
             <canvas id="chartProduksi" height="120"></canvas>
