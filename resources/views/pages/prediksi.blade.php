@@ -269,7 +269,7 @@
                     <div class="dashboard-stat-icon primary">
                         <i class="fas fa-database"></i>
                     </div>
-                    <div class="dashboard-stat-label">Dataset Aktif</div>
+                    <div class="dashboard-stat-label">Periode Aktif</div>
                     <div class="dashboard-stat-value">{{ number_format($totalRecord, 0, ',', '.') }} Record</div>
                     <p class="dashboard-stat-caption">Total histori produksi yang digunakan untuk analisis dan pemodelan.</p>
                 </div>
