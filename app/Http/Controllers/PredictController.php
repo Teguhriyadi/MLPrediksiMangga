@@ -72,7 +72,7 @@ class PredictController extends Controller
         }
 
         try {
-            $serviceUrl = rtrim((string) config('app.env_python'), '/');
+            $serviceUrl = rtrim((string) config('app.env_python'));
 
             $response = Http::timeout(20)
                 ->withHeaders([
