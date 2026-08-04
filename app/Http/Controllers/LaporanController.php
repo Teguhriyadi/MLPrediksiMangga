@@ -122,8 +122,8 @@ class LaporanController extends Controller
             ->get();
 
         $groupedRows = $rows
-            ->filter(fn ($item) => filled($item->kecamatan_id))
-            ->groupBy(fn ($item) => $item->kecamatan ?? '-')
+            ->filter(fn($item) => filled($item->kecamatan_id))
+            ->groupBy(fn($item) => $item->kecamatan ?? '-')
             ->sortKeys();
 
         $mappedRows = $groupedRows->values()->map(function (Collection $items, $index) {
@@ -155,7 +155,7 @@ class LaporanController extends Controller
             'summary' => [
                 ['label' => 'Jumlah Kecamatan', 'value' => $groupedRows->count()],
                 ['label' => 'Total Produksi (ton)', 'value' => number_format((float) $rows->sum('produksi'), 2, ',', '.')],
-                ['label' => 'Rata-rata Produksi/Kecamatan', 'value' => number_format((float) $groupedRows->avg(fn (Collection $items) => $items->avg('produksi')), 2, ',', '.')],
+                ['label' => 'Rata-rata Produksi/Kecamatan', 'value' => number_format((float) $groupedRows->avg(fn(Collection $items) => $items->avg('produksi')), 2, ',', '.')],
                 ['label' => 'Total Luas Panen (ha)', 'value' => number_format((float) $rows->sum('luas_panen'), 2, ',', '.')],
             ],
         ];
@@ -211,8 +211,8 @@ class LaporanController extends Controller
             ->orderBy('tahun')
             ->orderByRaw($this->quarterOrderSql())
             ->get()
-            ->filter(fn ($item) => filled($item->kecamatan_id))
-            ->groupBy(fn ($item) => $item->kecamatan ?? '-')
+            ->filter(fn($item) => filled($item->kecamatan_id))
+            ->groupBy(fn($item) => $item->kecamatan ?? '-')
             ->sortKeys();
 
         $compiledRows = $grouped->map(function (Collection $items, string $kecamatan) {
@@ -260,7 +260,7 @@ class LaporanController extends Controller
                 ['label' => 'Jumlah Kecamatan Diprediksi', 'value' => $compiledRows->count()],
                 ['label' => 'Rata-rata Forecast (ton)', 'value' => number_format((float) $compiledRows->avg('forecast_average_raw'), 2, ',', '.')],
                 ['label' => 'Rata-rata Growth (%)', 'value' => number_format((float) $compiledRows->avg('growth_percent_raw'), 2, ',', '.')],
-                ['label' => 'Kecamatan Tren Naik', 'value' => $compiledRows->filter(fn ($item) => $item['trend_raw'] === 'Naik')->count()],
+                ['label' => 'Kecamatan Tren Naik', 'value' => $compiledRows->filter(fn($item) => $item['trend_raw'] === 'Naik')->count()],
             ],
         ];
     }
@@ -268,8 +268,8 @@ class LaporanController extends Controller
     private function baseFilteredQuery(array $filters)
     {
         return ProduksiMangga::query()
-            ->when($filters['tahun'], fn ($query, $tahun) => $query->where('tahun', $tahun))
-            ->when($filters['kecamatan'], fn ($query, $kecamatan) => $query->where('kecamatan_id', $kecamatan));
+            ->when($filters['tahun'], fn($query, $tahun) => $query->where('tahun', $tahun))
+            ->when($filters['kecamatan'], fn($query, $kecamatan) => $query->where('kecamatan_id', $kecamatan));
     }
 
     private function extractFilters(Request $request): array
@@ -313,7 +313,7 @@ class LaporanController extends Controller
             ->where('is_active', true)
             ->when(
                 Auth::user()?->role === \App\Models\User::ROLE_UPTD && Auth::user()?->kecamatan_id,
-                fn ($query) => $query->whereKey(Auth::user()->kecamatan_id)
+                fn($query) => $query->whereKey(Auth::user()->kecamatan_id)
             )
             ->orderBy('nama')
             ->get(['id', 'nama']);
@@ -403,9 +403,15 @@ class LaporanController extends Controller
             'kecamatan' => $kecamatan,
             'steps' => $steps,
             'data' => $historiKecamatan->map(function ($item) {
+                // Normalisasi triwulan agar selalu berformat 'Q1', 'Q2', 'Q3', 'Q4'
+                $triwulanRaw = strtoupper(trim((string) $item->triwulan));
+                if (! str_starts_with($triwulanRaw, 'Q')) {
+                    $triwulanRaw = 'Q' . preg_replace('/\D/', '', $triwulanRaw);
+                }
+
                 return [
                     'tahun' => (int) $item->tahun,
-                    'triwulan' => $item->triwulan,
+                    'triwulan' => $triwulanRaw,
                     'produksi' => (float) $item->produksi,
                 ];
             })->values()->all(),
@@ -418,14 +424,14 @@ class LaporanController extends Controller
 
             if (! $response->successful()) {
                 return [
-                    'error' => 'Service Python merespons dengan status ' . $response->status() . '.',
+                    'error' => 'Service Python merespons status ' . $response->status() . ': ' . $response->body(),
                 ];
             }
 
             return $response->json() ?? [];
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             return [
-                'error' => 'Service Python belum aktif atau tidak dapat dihubungi.',
+                'error' => 'Service Python gagal dihubungi: ' . $e->getMessage(),
             ];
         }
     }

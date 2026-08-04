@@ -193,9 +193,15 @@ class ProduksiManggaController extends Controller
             "kecamatan" => $kecamatan,
             "steps" => $steps,
             "data" => $historiKecamatan->map(function ($item) {
+                // Normalisasi agar nilainya selalu 'Q1', 'Q2', 'Q3', atau 'Q4'
+                $triwulanRaw = strtoupper(trim((string) $item->triwulan));
+                if (!str_starts_with($triwulanRaw, 'Q')) {
+                    $triwulanRaw = 'Q' . preg_replace('/\D/', '', $triwulanRaw);
+                }
+
                 return [
                     "tahun" => (int) $item->tahun,
-                    "triwulan" => $item->triwulan,
+                    "triwulan" => $triwulanRaw,
                     "produksi" => (float) $item->produksi,
                 ];
             })->values()->all(),
@@ -208,14 +214,14 @@ class ProduksiManggaController extends Controller
 
             if (! $response->successful()) {
                 return [
-                    "error" => "Service Python merespons dengan status " . $response->status() . ".",
+                    "error" => "Service Python merespons status " . $response->status() . ": " . $response->body(),
                 ];
             }
 
             return $response->json() ?? [];
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
             return [
-                "error" => "Service Python belum aktif atau tidak dapat dihubungi.",
+                "error" => "Service Python gagal dihubungi: " . $e->getMessage(),
             ];
         }
     }
@@ -245,7 +251,7 @@ class ProduksiManggaController extends Controller
             "total_data" => $produksi->count(),
             "total_produksi" => round((float) $produksi->sum("produksi"), 2),
             "rata_produksi" => round((float) $produksi->avg("produksi"), 2),
-            "kecamatan_aktif" => $produksi->filter(fn ($item) => filled($item->kecamatan_id))->unique("kecamatan_id")->count(),
+            "kecamatan_aktif" => $produksi->filter(fn($item) => filled($item->kecamatan_id))->unique("kecamatan_id")->count(),
         ];
     }
 
