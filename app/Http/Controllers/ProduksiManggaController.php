@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ProduksiManggaController extends Controller
 {
@@ -183,46 +184,48 @@ class ProduksiManggaController extends Controller
 
     private function requestPrediction(Collection $historiKecamatan, int $steps = 4, ?string $kecamatan = null): array
     {
-        $serviceUrl = rtrim((string) config('app.env_python'), "/");
+        $serviceUrl = rtrim((string) config('app.env_python'), '/');
 
-        if ($serviceUrl === "" || $historiKecamatan->isEmpty()) {
+        if ($serviceUrl === '' || $historiKecamatan->isEmpty()) {
             return [];
         }
 
-        $payload = [
-            "kecamatan" => $kecamatan,
-            "steps" => $steps,
-            "data" => $historiKecamatan->map(function ($item) {
-                // Normalisasi agar nilainya selalu 'Q1', 'Q2', 'Q3', atau 'Q4'
-                $triwulanRaw = strtoupper(trim((string) $item->triwulan));
-                if (!str_starts_with($triwulanRaw, 'Q')) {
-                    $triwulanRaw = 'Q' . preg_replace('/\D/', '', $triwulanRaw);
-                }
+        // Format data disesuaikan persis dengan skema Pydantic Python
+        $dataArray = [];
+        foreach ($historiKecamatan as $item) {
+            $dataArray[] = [
+                'tahun' => (int) $item->tahun,
+                'triwulan' => (string) $item->triwulan,
+                'produksi' => (float) $item->produksi,
+                'curah_hujan' => (float) ($item->curah_hujan ?? 0),
+                'suhu' => (float) ($item->suhu ?? 0),
+            ];
+        }
 
-                return [
-                    "tahun" => (int) $item->tahun,
-                    "triwulan" => $triwulanRaw,
-                    "produksi" => (float) $item->produksi,
-                ];
-            })->values()->all(),
+        $payload = [
+            'data' => $dataArray,
+            'steps' => (int) $steps,
+            'kecamatan' => $kecamatan ? (string) $kecamatan : null,
         ];
 
         try {
             $response = Http::timeout(20)
-                ->acceptJson()
-                ->post($serviceUrl . "/predict", $payload);
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ])
+                ->post($serviceUrl . '/predict', $payload);
 
             if (! $response->successful()) {
-                return [
-                    "error" => "Service Python merespons status " . $response->status() . ": " . $response->body(),
-                ];
+                // Log detail error agar bisa dibaca jika ada masalah
+                Log::error('Python API Status Error: ' . $response->status() . ' Body: ' . $response->body());
+                return [];
             }
 
             return $response->json() ?? [];
         } catch (\Throwable $e) {
-            return [
-                "error" => "Service Python gagal dihubungi: " . $e->getMessage(),
-            ];
+            Log::error('Python API Timeout/Connect Error: ' . $e->getMessage());
+            return [];
         }
     }
 
