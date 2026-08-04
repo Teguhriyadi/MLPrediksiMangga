@@ -7,6 +7,7 @@ use App\Models\ProduksiMangga;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class PredictController extends Controller
 {
@@ -24,41 +25,72 @@ class PredictController extends Controller
             : null;
 
         $rawData = ProduksiMangga::query()
-            ->when($selectedKecamatanId, fn ($query, $kecamatanId) => $query->where('kecamatan_id', $kecamatanId))
+            ->when($selectedKecamatanId, fn($query, $kecamatanId) => $query->where('kecamatan_id', $kecamatanId))
             ->orderBy('tahun', 'ASC')
             ->orderByRaw($this->quarterOrderSql())
             ->get(['tahun', 'triwulan', 'produksi']);
 
-        $data = filled($selectedKecamatan)
-            ? $rawData
-            : $rawData
-                ->groupBy(fn ($item) => $item->tahun . '-' . $item->triwulan)
+        // Map data secara aman agar menghasilkan Plain Array untuk JSON Payload Python
+        if (filled($selectedKecamatan)) {
+            $dataFormatted = $rawData->map(function ($item) {
+                // Normalisasi triwulan agar selalu Q1, Q2, Q3, Q4
+                $triwulanRaw = strtoupper(trim((string) $item->triwulan));
+                if (! str_starts_with($triwulanRaw, 'Q')) {
+                    $triwulanRaw = 'Q' . preg_replace('/\D/', '', $triwulanRaw);
+                }
+
+                return [
+                    'tahun' => (int) $item->tahun,
+                    'triwulan' => $triwulanRaw,
+                    'produksi' => (float) $item->produksi,
+                ];
+            })->values()->all();
+        } else {
+            $dataFormatted = $rawData
+                ->groupBy(fn($item) => $item->tahun . '-' . $item->triwulan)
                 ->map(function ($items) {
                     $sample = $items->first();
 
+                    $triwulanRaw = strtoupper(trim((string) $sample->triwulan));
+                    if (! str_starts_with($triwulanRaw, 'Q')) {
+                        $triwulanRaw = 'Q' . preg_replace('/\D/', '', $triwulanRaw);
+                    }
+
                     return [
                         'tahun' => (int) $sample->tahun,
-                        'triwulan' => $sample->triwulan,
-                        'produksi' => round((float) $items->sum('produksi'), 2),
+                        'triwulan' => $triwulanRaw,
+                        'produksi' => (float) round((float) $items->sum('produksi'), 2),
                     ];
                 })
-                ->values();
+                ->values()
+                ->all(); // Mengubah Collection ke Native PHP Array
+        }
 
-        if ($data->isEmpty()) {
+        if (empty($dataFormatted)) {
             return redirect('/pages/dashboard?kecamatan=' . urlencode((string) $selectedKecamatan))
                 ->with('error', 'Data kecamatan yang dipilih belum tersedia untuk diprediksi.');
         }
 
         try {
-            $response = Http::timeout(20)->post(rtrim((string) config('app.env_python')) . "/predict", [
-                'data' => $data,
-                'steps' => 4,
-                'kecamatan' => $selectedKecamatanLabel,
-            ]);
+            $serviceUrl = rtrim((string) config('app.env_python'), '/');
+
+            $response = Http::timeout(20)
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ])
+                ->post($serviceUrl . '/predict', [
+                    'data' => $dataFormatted,
+                    'steps' => 4,
+                    'kecamatan' => $selectedKecamatanLabel ? (string) $selectedKecamatanLabel : null,
+                ]);
 
             if (! $response->successful()) {
+                // Log pesan error asli jika Python mengembalikan respons kegagalan
+                Log::error('Dashboard Store Python API Error: ' . $response->status() . ' - ' . $response->body());
+
                 return redirect('/pages/dashboard?kecamatan=' . urlencode((string) $selectedKecamatan))
-                    ->with('error', 'Service Python gagal dipanggil.');
+                    ->with('error', 'Service Python gagal dipanggil dengan status ' . $response->status() . '.');
             }
 
             $result = $response->json();
@@ -66,7 +98,9 @@ class PredictController extends Controller
             return redirect('/pages/dashboard?kecamatan=' . urlencode((string) $selectedKecamatan))
                 ->with('result', $result['data'] ?? [])
                 ->with('prediction_summary', $result['summary'] ?? []);
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            Log::error('Dashboard Store Python API Connection Error: ' . $e->getMessage());
+
             return redirect('/pages/dashboard?kecamatan=' . urlencode((string) $selectedKecamatan))
                 ->with('error', 'Service Python belum aktif atau tidak dapat dihubungi.');
         }
